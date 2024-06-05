@@ -1,7 +1,6 @@
 from fastapi import FastAPI
+from core import shorten_router
 
 app = FastAPI()
 
-@app.get('/')
-async def root ():
-    return {'Hello World': 'In FatApi'}
+app.include_router(shorten_router.router)
