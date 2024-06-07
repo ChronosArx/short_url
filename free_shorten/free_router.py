@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from .utils.generete_codes import generate_short_code
+from ..utils.generate_codes import generate_short_code
 from starlette.responses import RedirectResponse
 
 router = APIRouter()
@@ -15,5 +15,5 @@ async def get_free_short_url(original_url: str):
 
 
 @router.get("/{code}")
-async def redirect_original(code):
+async def redirect_original(code:str):
     return RedirectResponse(url=test_urls[code])
