@@ -1,7 +1,7 @@
 from database.data_base_conf import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import ForeignKey
-from typing import List
+from typing import List, Optional
 
 
 class User(Base):
@@ -10,7 +10,7 @@ class User(Base):
     user_name: Mapped[str] = mapped_column(unique=True)
     email: Mapped[str]
     password: Mapped[str]
-    id_premium_link: Mapped[int] = mapped_column(ForeignKey("premium_links.id"))
+    id_premium_link: Mapped[Optional[int]] = mapped_column(ForeignKey("premium_links.id"))
     premium_link: Mapped["PremiumLink"] = relationship(back_populates="user")
 
 
