@@ -8,9 +8,7 @@ router = APIRouter()
 
 
 @router.post("/signup")
-async def signup(
-    user: schema.UserSignUpSchema, db: Annotated[any, Depends(get_db)]
-):
+async def signup(user: schema.UserSignUpSchema, db: Annotated[any, Depends(get_db)]):
     return services.signup(user=user, db=db)
 
 

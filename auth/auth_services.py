@@ -1,11 +1,11 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
-import auth.auth_schema as auth_schema
+import auth.auth_schema as schema
 from database import models
 from utils.generate_hash import getPasswordHash, checkPassword
 
 
-def signup(db: Session, user: auth_schema.UserSignUpSchema):
+def signup(db: Session, user: schema.UserSignUpSchema):
     hash_password = getPasswordHash(user.password)
     db_user = models.User(
         user_name=user.user_name,
@@ -18,7 +18,7 @@ def signup(db: Session, user: auth_schema.UserSignUpSchema):
     return db_user
 
 
-def login(db: Session, user: auth_schema.UserLogInSchema):
+def login(db: Session, user: schema.UserLogInSchema):
     db_user = (
         db.query(models.User).filter(models.User.user_name == user.user_name).first()
     )
