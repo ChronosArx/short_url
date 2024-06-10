@@ -1,19 +1,16 @@
-from fastapi import APIRouter
-from utils.generate_codes import generate_short_code
-from starlette.responses import RedirectResponse
+from fastapi import APIRouter, Depends
+from share_dependencies.database_dependency import get_db
+from typing import Annotated
+import free_shorten.free_services as services
 
 router = APIRouter()
 
-test_urls = {}
-
 
 @router.get("/short_url_free")
-async def get_free_short_url(original_url: str):
-    code = generate_short_code()
-    test_urls[code] = original_url
-    return {"originalUrl": original_url, "shortCode": code}
+async def get_free_short_url(original_url: str, db: Annotated[any, Depends(get_db)]):
+    return services.create_short_url(original_url=original_url, db=db)
 
 
 @router.get("/{code}")
-async def redirect_original(code:str):
-    return RedirectResponse(url=test_urls[code])
+async def redirect_original(code: str, db: Annotated[any, Depends(get_db)]):
+    return services.redirect_url(code=code, db=db)
