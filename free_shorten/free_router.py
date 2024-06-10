@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from ..utils.generate_codes import generate_short_code
+from utils.generate_codes import generate_short_code
 from starlette.responses import RedirectResponse
 
 router = APIRouter()

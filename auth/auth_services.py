@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 import auth.auth_schema as auth_schema
-from ..database import models
-from ..utils.generate_hash import getPasswordHash, checkPassword
+from database import models
+from utils.generate_hash import getPasswordHash, checkPassword
 
 
 def signup(db: Session, user: auth_schema.UserSignUpSchema):
