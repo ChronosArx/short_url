@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from typing import Annotated
 import auth.auth_services as services
 import auth.auth_schema as schema
-from share_dependencies.database_dependency import get_db
+from database.database_dependency import get_db
 
 router = APIRouter()
 

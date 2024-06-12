@@ -5,7 +5,7 @@ from database.data_base_conf import Base, engine
 
 app = FastAPI()
 
-Base.metadata.create_all(bind=engine)
+#Base.metadata.create_all(bind=engine)
 
 app.include_router(free_router.router)
 app.include_router(auth_routes.router)
