@@ -13,13 +13,13 @@ token_algorithm = os.environ.get("TOKEN_ALG")
 secret = os.environ.get("SECRET")
 
 
-schema_oauth = OAuth2PasswordBearer(tokenUrl="login")
+schema_oauth = OAuth2PasswordBearer(tokenUrl="/login")
 
 
 def generate_access_token(user_id: int):
     expire = datetime.now(tz=timezone.utc) + timedelta(minutes=15)
     new_payload = {"sub": str(user_id), "exp ": expire.timestamp()}
-    token = jwt.encode(payload=new_payload, key=secret, algorithm=token)
+    token = jwt.encode(payload=new_payload, key=secret, algorithm=token_algorithm)
     return token
 
 
@@ -33,12 +33,13 @@ def verify_token(token: Annotated[str, Depends(schema_oauth)]):
         detail="Error de Credenciales",
         headers={"WWW-Authenticate": "Bearer"},
     )
-
     try:
-        payload = jwt.decode(token, secret, algorithms=token_algorithm)
+        payload = jwt.decode(token, secret, algorithms=[token_algorithm])
         if not payload:
             raise exception
     except ExpiredSignatureError:
         raise exception
     except PyJWTError:
         raise exception
+
+    return True

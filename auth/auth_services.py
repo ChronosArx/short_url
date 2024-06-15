@@ -1,12 +1,15 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
-import auth.auth_schema as schema
-from database import models
-from utils.generate_hash import getPasswordHash, checkPassword
+from . import auth_schema as schema
+from ..database import models
+from ..utils.generate_hash import getPasswordHash, checkPassword
+from ..utils.jwt_encoders import generate_access_token
 
 
 def signup(db: Session, user: schema.UserSignUpSchema):
     hash_password = getPasswordHash(user.password)
+    if db.query(models.User).filter(models.User.user_name == user.user_name):
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="User exist!")
     db_user = models.User(
         user_name=user.user_name,
         email=user.email,
@@ -15,7 +18,8 @@ def signup(db: Session, user: schema.UserSignUpSchema):
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
-    return db_user
+    token = generate_access_token(user_id=db_user.id)
+    return token
 
 
 def login(db: Session, user: schema.UserLogInSchema):
@@ -32,4 +36,5 @@ def login(db: Session, user: schema.UserLogInSchema):
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="The password is incorrect!",
         )
-    return db_user
+    token = generate_access_token(user_id=db_user.id)
+    return token

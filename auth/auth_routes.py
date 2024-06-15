@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends
 from typing import Annotated
-import auth.auth_services as services
-import auth.auth_schema as schema
-from database.database_dependency import get_db
+from . import auth_services as services
+from . import auth_schema as schema
+from ..database.database_dependency import get_db
 
 router = APIRouter()
 

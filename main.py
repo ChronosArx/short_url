@@ -1,11 +1,12 @@
 from fastapi import FastAPI
-from free_shorten import free_router
-from auth import auth_routes
-from database.data_base_conf import Base, engine
+from fastapi.middleware.cors import CORSMiddleware
+from .free_shorten import free_routes
+from .auth import auth_routes
+from .premium_shorten import premium_routes
 
 app = FastAPI()
 
-#Base.metadata.create_all(bind=engine)
 
-app.include_router(free_router.router)
-app.include_router(auth_routes.router)
+app.include_router(router=free_routes.router)
+app.include_router(router=auth_routes.router)
+app.include_router(router=premium_routes.router)

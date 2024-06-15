@@ -1,9 +1,11 @@
 from fastapi import APIRouter, Depends
-from database.database_dependency import get_db
+from ..database.database_dependency import get_db
 from typing import Annotated
-import free_shorten.free_services as services
+from . import free_services as services
 
-router = APIRouter()
+router = APIRouter(
+    tags=['Free']
+)
 
 
 @router.get("/short_url_free")

@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 from starlette.responses import RedirectResponse
 from fastapi import HTTPException, status
-from database import models
-from utils.generate_codes import generate_short_code
+from ..database import models
+from ..utils.generate_codes import generate_short_code
 
 
 def create_short_url(original_url: str, db: Session):
