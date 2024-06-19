@@ -20,7 +20,7 @@ async def create_domain(data: CreateDomainSchema, db: Session):
     return new_domain
 
 
-async def create_link(data: CreateCodeSchema, db: Session):
+async def create_code(data: CreateCodeSchema, db: Session):
     user_db = (
         db.query(models.User).filter(models.User.user_name == data.user_name).first()
     )
