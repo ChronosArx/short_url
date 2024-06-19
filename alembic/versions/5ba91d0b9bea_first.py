@@ -1,8 +1,8 @@
-"""inital migration
+"""first
 
-Revision ID: 6cbf964cf44a
+Revision ID: 5ba91d0b9bea
 Revises: 
-Create Date: 2024-06-09 00:44:35.134679
+Create Date: 2024-06-18 02:46:40.980908
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '6cbf964cf44a'
+revision: str = '5ba91d0b9bea'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -28,24 +28,26 @@ def upgrade() -> None:
     )
     op.create_table('premium_links',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
-    sa.Column('custom_link', sa.String(), nullable=False),
+    sa.Column('custom_domain', sa.String(), nullable=False),
     sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('custom_link')
+    sa.UniqueConstraint('custom_domain')
     )
     op.create_table('custom_codes',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
+    sa.Column('original_url', sa.String(), nullable=False),
     sa.Column('code', sa.String(), nullable=False),
     sa.Column('id_premium_link', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['id_premium_link'], ['premium_links.id'], ),
     sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('code')
+    sa.UniqueConstraint('code'),
+    sa.UniqueConstraint('original_url')
     )
     op.create_table('users',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('user_name', sa.String(), nullable=False),
     sa.Column('email', sa.String(), nullable=False),
     sa.Column('password', sa.String(), nullable=False),
-    sa.Column('id_premium_link', sa.Integer(), nullable=False),
+    sa.Column('id_premium_link', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['id_premium_link'], ['premium_links.id'], ),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('user_name')

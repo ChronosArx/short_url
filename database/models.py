@@ -26,7 +26,7 @@ class FreeUrl(Base):
 class PremiumLink(Base):
     __tablename__ = "premium_links"
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    custom_link: Mapped[str] = mapped_column(unique=True)
+    custom_domain: Mapped[str] = mapped_column(unique=True)
     user: Mapped["User"] = relationship(back_populates="premium_link")
     codes: Mapped[List["CustomCode"]] = relationship()
 
@@ -34,5 +34,6 @@ class PremiumLink(Base):
 class CustomCode(Base):
     __tablename__ = "custom_codes"
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    original_url: Mapped[str] = mapped_column(unique=True)
     code: Mapped[str] = mapped_column(unique=True)
     id_premium_link: Mapped[int] = mapped_column(ForeignKey("premium_links.id"))

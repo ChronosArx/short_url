@@ -1,8 +1,27 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, Response, status
+from typing import Annotated
+from .premium_schemas import CreateDomainSchema
+from ..database.database_dependency import get_db
+from . import premium_services as services
+from ..utils.jwt_encoders import verify_token
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/premium",
+    tags=["Premium"],
+)
 
 
-@router.get("/premium", tags=["Premium"])
-async def get_premium_link():
-    return {"Message": "Hello this is premium"}
+@router.post(
+    "/create_domain",
+    dependencies=[Depends(verify_token)],
+    status_code=status.HTTP_201_CREATED,
+    response_description='Domain was created.'
+)
+async def create_domain(data: CreateDomainSchema, db: Annotated[any, Depends(get_db)]):
+    await services.create_domain(data=data, db=db)
+    return
+
+
+@router.post("/create_custom_code")
+async def create_link():
+    pass

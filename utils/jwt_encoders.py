@@ -30,7 +30,7 @@ def generate_refresh_token():
 def verify_token(token: Annotated[str, Depends(schema_oauth)]):
     exception = HTTPException(
         status_code=401,
-        detail="Error de Credenciales",
+        detail="Credentials Error",
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:

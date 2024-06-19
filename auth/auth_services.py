@@ -8,7 +8,7 @@ from ..utils.jwt_encoders import generate_access_token
 
 def signup(db: Session, user: schema.UserSignUpSchema):
     hash_password = getPasswordHash(user.password)
-    if db.query(models.User).filter(models.User.user_name == user.user_name):
+    if db.query(models.User).filter(models.User.user_name == user.user_name).first():
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="User exist!")
     db_user = models.User(
         user_name=user.user_name,

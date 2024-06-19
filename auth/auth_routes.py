@@ -4,7 +4,10 @@ from . import auth_services as services
 from . import auth_schema as schema
 from ..database.database_dependency import get_db
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/auth",
+    tags=["Authentication"],
+)
 
 
 @router.post("/signup")
