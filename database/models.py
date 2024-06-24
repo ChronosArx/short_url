@@ -10,7 +10,7 @@ class User(Base):
     user_name: Mapped[str] = mapped_column(unique=True)
     email: Mapped[str]
     password: Mapped[str]
-    codes: Mapped["Code"] = relationship(back_populates="code")
+    codes: Mapped[List["Code"]] = relationship(back_populates="code")
 
 
 class Code(Base):
@@ -19,4 +19,4 @@ class Code(Base):
     original_url: Mapped[str]
     code: Mapped[str]
     user_id: Mapped[Optional[int]] = mapped_column(ForeignKey("user.id"))
-    codes: Mapped["User"] = relationship(back_populates="user")
+    user: Mapped["User"] = relationship(back_populates="codes")
