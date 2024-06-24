@@ -5,35 +5,18 @@ from typing import List, Optional
 
 
 class User(Base):
-    __tablename__ = "users"
+    __tablename__ = "user"
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     user_name: Mapped[str] = mapped_column(unique=True)
     email: Mapped[str]
     password: Mapped[str]
-    id_premium_link: Mapped[Optional[int]] = mapped_column(
-        ForeignKey("premium_links.id")
-    )
-    premium_link: Mapped["PremiumLink"] = relationship(back_populates="user")
+    codes: Mapped["Code"] = relationship(back_populates="code")
 
 
-class FreeUrl(Base):
-    __tablename__ = "free_urls"
+class Code(Base):
+    __tablename__ = "code"
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     original_url: Mapped[str]
     code: Mapped[str]
-
-
-class PremiumLink(Base):
-    __tablename__ = "premium_links"
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    custom_domain: Mapped[str] = mapped_column(unique=True)
-    user: Mapped["User"] = relationship(back_populates="premium_link")
-    codes: Mapped[List["CustomCode"]] = relationship()
-
-
-class CustomCode(Base):
-    __tablename__ = "custom_codes"
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    original_url: Mapped[str] = mapped_column(unique=True)
-    code: Mapped[str] = mapped_column(unique=True)
-    id_premium_link: Mapped[int] = mapped_column(ForeignKey("premium_links.id"))
+    user_id: Mapped[Optional[int]] = mapped_column(ForeignKey("user.id"))
+    codes: Mapped["User"] = relationship(back_populates="user")

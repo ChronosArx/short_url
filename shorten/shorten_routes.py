@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from ..database.database_dependency import get_db
 from typing import Annotated
-from . import free_services as services
+from . import shorten_services as services
 
 router = APIRouter(prefix="/free", tags=["Free"])
 

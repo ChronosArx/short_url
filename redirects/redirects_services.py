@@ -4,8 +4,8 @@ from sqlalchemy.orm import Session
 from ..database import models
 
 
-def redirect_url_free(code: str, db: Session):
-    free_url = db.query(models.FreeUrl).filter(models.FreeUrl.code == code).first()
-    if not free_url:
+def redirect_url(code: str, db: Session):
+    code_db = db.query(models.Code).filter(models.Code.code == code).first()
+    if not code_db:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
-    return RedirectResponse(url=free_url.original_url)
+    return RedirectResponse(url=code_db.original_url)
