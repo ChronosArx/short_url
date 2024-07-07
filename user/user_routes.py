@@ -3,7 +3,7 @@ from fastapi import APIRouter
 router = APIRouter(prefix="/user")
 
 
-@router.get("/all_codes")
+@router.get("/codes")
 async def get_all_codes():
     pass
 
