@@ -2,13 +2,18 @@ from fastapi import APIRouter, Depends
 from ..database.database_dependency import get_db
 from typing import Annotated
 from . import shorten_services as services
-from .shorten_schemas import CreateShortenUrlSchema
+from .shorten_schemas import CreateShortenUrlSchema, UrlShortenSchema
 
 router = APIRouter(prefix="/shorten", tags=["Free"])
 
 
-@router.post("/shorten_url")
+@router.post("/shorten_url", response_model=UrlShortenSchema)
 async def shorten_url(
     original_url: CreateShortenUrlSchema, db: Annotated[any, Depends(get_db)]
-):
-    return services.create_short_url(original_url=original_url, db=db)
+) -> UrlShortenSchema:
+    """
+    Para acortar el url porfavor ingrese el url mediante el body
+    en un campo el cual se llama original_url.
+    """
+    shorten_url = services.create_short_url(original_url=original_url.original_url, db=db)
+    return shorten_url
