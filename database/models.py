@@ -17,6 +17,7 @@ class Code(Base):
     __tablename__ = "code"
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     original_url: Mapped[str]
+    title: Mapped[Optional[str]]
     code: Mapped[str]
     user_id: Mapped[Optional[int]] = mapped_column(ForeignKey("user.id"))
     user: Mapped["User"] = relationship(back_populates="codes")
