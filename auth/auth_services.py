@@ -18,7 +18,7 @@ def signup(db: Session, user: schema.UserSignUpSchema):
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
-    token = generate_access_token(user_id=db_user.id)
+    token = generate_access_token(user_id=db_user.id, user_name=db_user.user_name)
     return token
 
 
@@ -36,5 +36,5 @@ def login(db: Session, user: schema.UserLogInSchema):
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="The password is incorrect!",
         )
-    token = generate_access_token(user_id=db_user.id)
+    token = generate_access_token(user_id=db_user.id, user_name=db_user.user_name)
     return token

@@ -16,9 +16,9 @@ secret = os.environ.get("SECRET")
 schema_oauth = OAuth2PasswordBearer(tokenUrl="/login")
 
 
-def generate_access_token(user_id: int):
+def generate_access_token(user_id: int, user_name: str):
     expire = datetime.now(tz=timezone.utc) + timedelta(minutes=15)
-    new_payload = {"sub": str(user_id), "exp ": expire.timestamp()}
+    new_payload = {"sub": str(user_id), "name": user_name, "exp ": expire.timestamp()}
     token = jwt.encode(payload=new_payload, key=secret, algorithm=token_algorithm)
     return token
 
@@ -42,4 +42,9 @@ def verify_token(token: Annotated[str, Depends(schema_oauth)]):
     except PyJWTError:
         raise exception
 
-    return True
+    return token
+
+
+def get_current_user(token: Annotated[str, Depends(verify_token)]):
+    payload = jwt.decode(token, secret, algorithms=[token_algorithm])
+    return payload["name"]
