@@ -1,7 +1,7 @@
 from ...config.data_base_config import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import ForeignKey
-from typing import List, Optional
+from typing import Optional
 from .user import User
 
 
