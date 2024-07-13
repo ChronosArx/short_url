@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from typing import Annotated
-from ..database.database_dependency import get_db
-from . import redirects_services as services
+from ..dependencies import get_db
+from ..controllers import redirects_controller as services
 
 router = APIRouter(tags=["Redirects"])
 

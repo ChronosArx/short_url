@@ -10,3 +10,7 @@ class UserSignUpSchema(BaseModel):
 class UserLogInSchema(BaseModel):
     user_name: str
     password: str
+
+
+class Token(BaseModel):
+    access_token: str
