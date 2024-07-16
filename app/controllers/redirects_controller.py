@@ -1,7 +1,7 @@
 from starlette.responses import RedirectResponse
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
-from ..models.code import Code
+from models.code import Code
 
 
 def redirect_url(code: str, db: Session):

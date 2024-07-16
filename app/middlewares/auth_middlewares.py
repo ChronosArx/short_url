@@ -23,10 +23,6 @@ def generate_access_token(user_id: int, user_name: str):
     return token
 
 
-def generate_refresh_token():
-    pass
-
-
 def verify_token(token: Annotated[str, Depends(schema_oauth)]):
     exception = HTTPException(
         status_code=401,

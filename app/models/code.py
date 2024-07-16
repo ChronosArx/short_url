@@ -1,8 +1,7 @@
-from ...config.data_base_config import Base
+from config.data_base_config import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import ForeignKey
 from typing import Optional
-from .user import User
 
 
 class Code(Base):
@@ -12,4 +11,4 @@ class Code(Base):
     title: Mapped[Optional[str]]
     code: Mapped[str]
     user_id: Mapped[Optional[int]] = mapped_column(ForeignKey("user.id"))
-    user: Mapped["User"] = relationship(back_populates="codes")
+    user = relationship("User", back_populates="codes")

@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, status
 from typing import Annotated
-from ..controllers import auth_controller as services
-from ..schemas import auth_schemas as schema
-from ..dependencies import get_db
+from controllers import auth_controller as services
+from schemas import auth_schemas as schema
+from dependencies import get_db
 
 router = APIRouter(
     prefix="/auth",

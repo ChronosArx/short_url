@@ -1,7 +1,6 @@
-from ...config.data_base_config import Base
+from config.data_base_config import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import List
-from .code import Code
 
 
 class User(Base):
@@ -10,4 +9,4 @@ class User(Base):
     user_name: Mapped[str] = mapped_column(unique=True)
     email: Mapped[str]
     password: Mapped[str]
-    codes: Mapped[List["Code"]] = relationship(back_populates="user")
+    codes = relationship("Code", back_populates="user")

@@ -1,9 +1,9 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
-from ..schemas import auth_schemas as schema
-from ..models.user import User
-from ..utils.generate_hash import getPasswordHash, checkPassword
-from ..middlewares.auth_middlewares import generate_access_token
+from schemas import auth_schemas as schema
+from models.user import User
+from utils.generate_hash import getPasswordHash, checkPassword
+from middlewares.auth_middlewares import generate_access_token
 
 
 def signup(db: Session, user: schema.UserSignUpSchema):

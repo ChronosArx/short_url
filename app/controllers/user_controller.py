@@ -1,8 +1,8 @@
 from fastapi import HTTPException
 from fastapi import status
 from sqlalchemy.orm import Session
-from ..models.user import User
-from ..models.code import Code
+from models.user import User
+from models.code import Code
 
 
 async def get_all_codes(user: str, db: Session) -> list[Code]:

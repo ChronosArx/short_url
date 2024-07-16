@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, status
-from ..dependencies import get_db
-from ..middlewares.auth_middlewares import get_current_user, verify_token
+from dependencies import get_db
+from middlewares.auth_middlewares import get_current_user, verify_token
 from typing import Annotated
-from ..controllers import user_controller as services
+from controllers import user_controller as services
 
 router = APIRouter(prefix="/user", tags=["User"])
 
