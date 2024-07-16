@@ -9,6 +9,4 @@ def getPasswordHash(password: str) -> str:
 
 def checkPassword(password: str, password_hashed: str) -> bool:
     password_hashed_bytes = bytes.fromhex(password_hashed)
-    if bcrypt.checkpw(password.encode(), password_hashed_bytes):
-        return True
-    return False
+    return bcrypt.checkpw(password.encode(), password_hashed_bytes)
