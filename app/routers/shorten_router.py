@@ -3,7 +3,10 @@ from dependencies import get_db
 from typing import Annotated
 from controllers import shorten_controller as controller
 from schemas.shorten_schemas import ShortUrlCreateSchema, ShortUrlSResponseSchema
-from middlewares.auth_middlewares import verify_token, get_current_user
+from middlewares.auth_middlewares import (
+    verify_token_middleware,
+    get_current_user_middleware,
+)
 
 router = APIRouter(prefix="/shorten", tags=["Free"])
 
@@ -23,10 +26,10 @@ async def shorten_url(
     return controller.create_short_url(original_url=url.original_url, db=db)
 
 
-@router.post("/shorten_url_by_user", dependencies=[Depends(verify_token)])
+@router.post("/shorten_url_by_user", dependencies=[Depends(verify_token_middleware)])
 async def shorten_url_by_user(
     url_data: ShortUrlCreateSchema,
-    user: Annotated[str, Depends(get_current_user)],
+    user: Annotated[str, Depends(get_current_user_middleware)],
     db: Annotated[any, Depends(get_db)],
 ) -> ShortUrlSResponseSchema:
     """

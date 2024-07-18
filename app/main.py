@@ -4,6 +4,17 @@ from routers import shorten_router, auth_router, user_router, redirects_router
 
 app = FastAPI()
 
+origins = [
+    "http://localhost:5173",
+    "http://localhost:5174",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_methods=["*"],
+)
+
 VERSION_API = "/apiv1"
 
 app.include_router(router=redirects_router.router)

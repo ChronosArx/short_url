@@ -1,6 +1,9 @@
 from fastapi import APIRouter, Depends, status
 from dependencies import get_db
-from middlewares.auth_middlewares import get_current_user, verify_token
+from middlewares.auth_middlewares import (
+    get_current_user_middleware,
+    verify_token_middleware,
+)
 from typing import Annotated
 from controllers import user_controller as services
 
@@ -9,7 +12,8 @@ router = APIRouter(prefix="/user", tags=["User"])
 
 @router.get("/codes")
 async def get_all_codes(
-    user: Annotated[str, Depends(get_current_user)], db: Annotated[any, Depends(get_db)]
+    user: Annotated[str, Depends(get_current_user_middleware)],
+    db: Annotated[any, Depends(get_db)],
 ):
     """
     Retorna todos los urls acortados del usuario require token de autentificación
@@ -20,7 +24,7 @@ async def get_all_codes(
 @router.delete(
     "/code/{code_id}",
     status_code=status.HTTP_200_OK,
-    dependencies=[Depends(verify_token)],
+    dependencies=[Depends(verify_token_middleware)],
 )
 async def delate_code(id: int, db: Annotated[any, Depends(get_db)]):
     """
