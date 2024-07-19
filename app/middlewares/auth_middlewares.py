@@ -22,19 +22,24 @@ def verify_token_middleware(token: Annotated[str, Depends(schema_oauth)]):
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
-        payload = jwt.decode(token, SECRET, algorithms=[TOKEN_ALGORITHM])
+        payload = jwt.decode(
+            token,
+            SECRET,
+            algorithms=[TOKEN_ALGORITHM],
+            verify=True,
+            options={"verify_exp": True},
+        )
         if not payload:
             raise exception
     except ExpiredSignatureError:
-        raise exception
+        raise HTTPException(status_code=401, detail="Credentials Error")
     except PyJWTError:
         raise exception
 
-    return token
+    return payload
 
 
 def get_current_user_middleware(
-    token: Annotated[str, Depends(verify_token_middleware)]
+    payload: Annotated[str, Depends(verify_token_middleware)]
 ):
-    payload = jwt.decode(token, SECRET, algorithms=[TOKEN_ALGORITHM])
     return payload["name"]
