@@ -12,21 +12,21 @@ router = APIRouter(
 
 @router.post(
     "/signup",
-    response_model=schema.Token,
+    response_model=schema.Tokens,
     status_code=status.HTTP_201_CREATED,
 )
 async def signup(
     user: schema.UserSignUpSchema,
     db: Annotated[any, Depends(get_db)],
     response: Response,
-) -> schema.Token:
+) -> schema.Tokens:
     return services.signup(user=user, db=db)
 
 
-@router.post("/login", status_code=status.HTTP_200_OK, response_model=schema.Token)
+@router.post("/login", status_code=status.HTTP_200_OK, response_model=schema.Tokens)
 async def login(
     user: schema.UserLogInSchema,
     db: Annotated[any, Depends(get_db)],
     response: Response,
-) -> schema.Token:
+) -> schema.Tokens:
     return services.login(user=user, db=db)

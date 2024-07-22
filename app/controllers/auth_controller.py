@@ -3,7 +3,7 @@ from fastapi import HTTPException, status
 from schemas import auth_schemas as schema
 from models.user import User
 from utils.generate_hash import getPasswordHash, checkPassword
-from utils.generate_token import generate_access_token
+from utils.generate_token import generate_token
 
 
 def signup(db: Session, user: schema.UserSignUpSchema):
@@ -18,8 +18,11 @@ def signup(db: Session, user: schema.UserSignUpSchema):
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
-    token = generate_access_token(user_id=db_user.id, user_name=db_user.user_name)
-    return schema.Token(access_token=token)
+    access_token = generate_token(user_id=db_user.id, user_name=db_user.user_name)
+    refresh_token = generate_token(
+        user_id=db_user.id, user_name=db_user.user_name, refresh=True
+    )
+    return schema.Tokens(access_token=access_token, refresh_token=refresh_token)
 
 
 def login(db: Session, user: schema.UserLogInSchema):
@@ -34,6 +37,8 @@ def login(db: Session, user: schema.UserLogInSchema):
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="The password is incorrect!",
         )
-    token = generate_access_token(user_id=db_user.id, user_name=db_user.user_name)
-
-    return schema.Token(access_token=token)
+    access_token = generate_token(user_id=db_user.id, user_name=db_user.user_name)
+    refresh_token = generate_token(
+        user_id=db_user.id, user_name=db_user.user_name, refresh=True
+    )
+    return schema.Tokens(access_token=access_token, refresh_token=refresh_token)
