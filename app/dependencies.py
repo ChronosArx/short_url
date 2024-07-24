@@ -1,4 +1,4 @@
-from config.data_base_config import SessionLocal
+from app.core.config_data_base import SessionLocal
 
 
 def get_db():

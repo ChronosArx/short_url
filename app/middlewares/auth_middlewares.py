@@ -10,6 +10,7 @@ dotenv.load_dotenv()
 
 TOKEN_ALGORITHM = os.environ.get("TOKEN_ALG")
 SECRET = os.environ.get("SECRET")
+SECRET_REFRESH = os.environ.get("SECRET_REFRESH")
 
 
 schema_oauth = OAuth2PasswordBearer(tokenUrl="/login")
@@ -37,6 +38,27 @@ def verify_token_middleware(token: Annotated[str, Depends(schema_oauth)]):
         raise exception
 
     return payload
+
+
+def verify_refresh_token_middleware(token: str):
+    exception = HTTPException(
+        status_code=401,
+        detail="Credentials Error",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        decode = jwt.decode(
+            token,
+            SECRET_REFRESH,
+            algorithms=[TOKEN_ALGORITHM],
+            verify=True,
+            options={"verify_exp": True},
+        )
+        return decode
+    except ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Credentials Error")
+    except PyJWTError:
+        raise exception
 
 
 def get_current_user_middleware(
