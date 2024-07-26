@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, status, Response
 from typing import Annotated
-from controllers import auth_controller as services
-from schemas import auth_schemas as schema
-from dependencies import get_db
-from middlewares.auth_middlewares import get_current_user_middleware
+from ..controllers import auth_controller as services
+from ..schemas import auth_schemas as schema
+from ..dependencies import get_db
+from ..middlewares.auth_middlewares import get_current_user_middleware
 
 router = APIRouter(
     prefix="/auth",

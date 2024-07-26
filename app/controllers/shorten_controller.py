@@ -1,9 +1,9 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
-from models.user import User
-from models.code import Code
-from utils.generate_codes import generate_short_code
-from schemas.shorten_schemas import ShortUrlCreateSchema, ShortUrlSResponseSchema
+from ..models.user import User
+from ..models.code import Code
+from ..utils.generate_codes import generate_short_code
+from ..schemas.shorten_schemas import ShortUrlCreateSchema, ShortUrlSResponseSchema
 
 
 def create_short_url(original_url: str, db: Session) -> ShortUrlSResponseSchema:

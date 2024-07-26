@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, status
-from dependencies import get_db
+from ..dependencies import get_db
 from typing import Annotated
-from controllers import shorten_controller as controller
-from schemas.shorten_schemas import ShortUrlCreateSchema, ShortUrlSResponseSchema
-from middlewares.auth_middlewares import get_current_user_middleware
+from ..controllers import shorten_controller as controller
+from ..schemas.shorten_schemas import ShortUrlCreateSchema, ShortUrlSResponseSchema
+from ..middlewares.auth_middlewares import get_current_user_middleware
 
 
 router = APIRouter(prefix="/shorten", tags=["Free"])

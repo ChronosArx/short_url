@@ -1,10 +1,10 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
-from schemas import auth_schemas as schema
-from models.user import User
-from models.refresh_token import RefreshToken
-from utils.generate_hash import getPasswordHash, checkPassword
-from utils.generate_token import generate_token, verify_env_variables
+from ..schemas import auth_schemas as schema
+from ..models.user import User
+from ..models.refresh_token import RefreshToken
+from ..utils.generate_hash import getPasswordHash, checkPassword
+from ..utils.generate_token import generate_token, verify_env_variables
 from datetime import datetime, timedelta, timezone
 import dotenv
 import os
