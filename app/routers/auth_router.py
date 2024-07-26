@@ -3,7 +3,7 @@ from typing import Annotated
 from ..controllers import auth_controller as services
 from ..schemas import auth_schemas as schema
 from ..dependencies import get_db
-from ..middlewares.auth_middlewares import get_current_user_middleware
+from ..middlewares.auth_middlewares import verify_refresh_token_middleware
 
 router = APIRouter(
     prefix="/auth",
@@ -35,7 +35,7 @@ async def login(
 
 @router.get("/token")
 async def get_token(
-    user: Annotated[str, Depends(get_current_user_middleware)],
+    token: Annotated[str, Depends(verify_refresh_token_middleware)],
     db: Annotated[any, Depends(get_db)],
 ):
-    pass
+    return services.new_token(token=token, db=db)

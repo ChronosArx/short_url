@@ -15,6 +15,18 @@ verify_env_variables()
 EXPIRE_REFRESH = float(EXPIRE_REFRESH)
 
 
+def save_refresh_token(token: str, user_id: int, db: Session):
+    refresh_token = RefreshToken(
+        refresh_token=token,
+        user_id=user_id,
+        expire_date=datetime.now(tz=timezone.utc) + timedelta(days=EXPIRE_REFRESH),
+    )
+    db.add(refresh_token)
+    db.commit()
+    db.refresh(refresh_token)
+    return refresh_token
+
+
 def signup(db: Session, user: schema.UserSignUpSchema):
     hash_password = getPasswordHash(user.password)
     if db.query(User).filter(User.user_name == user.user_name).first():
@@ -36,14 +48,7 @@ def signup(db: Session, user: schema.UserSignUpSchema):
     refresh_token = generate_token(
         user_id=user_db.id, user_name=user_db.user_name, refresh=True
     )
-    refresh_db = RefreshToken(
-        refresh_token=refresh_token,
-        user_id=user_db.id,
-        expire_date=datetime.now(tz=timezone.utc) + timedelta(days=EXPIRE_REFRESH),
-    )
-    db.add(refresh_db)
-    db.commit()
-    db.refresh(refresh_db)
+    refresh_db = save_refresh_token(token=refresh_token, user_id=user_db.id, db=db)
 
     return schema.Tokens(
         access_token=access_token,
@@ -67,7 +72,13 @@ def login(db: Session, user: schema.UserLogInSchema):
     refresh_token = generate_token(
         user_id=user_db.id, user_name=user_db.user_name, refresh=True
     )
-    return schema.Tokens(access_token=access_token, refresh_token=refresh_token)
+
+    refresh_db = save_refresh_token(token=refresh_token, user_id=user_db.id, db=db)
+
+    return schema.Tokens(
+        access_token=access_token,
+        refresh_token=refresh_db.refresh_token,
+    )
 
 
 def new_token(token: str, db: Session):

@@ -7,7 +7,6 @@ dotenv.load_dotenv()
 
 TOKEN_ALGORITHM = os.environ.get("TOKEN_ALG")
 SECRET = os.environ.get("SECRET")
-SECRET_REFRESH = os.environ.get("SECRET_REFRESH")
 EXPIRE_ACCESS = os.environ.get("EXPIRE_ACCESS")
 EXPIRE_REFRESH = os.environ.get("EXPIRE_REFRESH")
 
@@ -16,13 +15,7 @@ EXPIRE_REFRESH = float(EXPIRE_REFRESH)
 
 
 def verify_env_variables():
-    if not (
-        EXPIRE_ACCESS
-        and EXPIRE_REFRESH
-        and SECRET
-        and TOKEN_ALGORITHM
-        and SECRET_REFRESH
-    ):
+    if not (EXPIRE_ACCESS and EXPIRE_REFRESH and SECRET and TOKEN_ALGORITHM):
         raise Exception("Environment variables are missing")
 
 
