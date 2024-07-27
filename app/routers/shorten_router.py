@@ -6,7 +6,7 @@ from ..schemas.shorten_schemas import ShortUrlCreateSchema, ShortUrlSResponseSch
 from ..middlewares.auth_middlewares import get_current_user_middleware
 
 
-router = APIRouter(prefix="/shorten", tags=["Free"])
+router = APIRouter(prefix="/shorten", tags=["Shorten Urls"])
 
 
 @router.post(
