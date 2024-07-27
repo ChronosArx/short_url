@@ -96,4 +96,4 @@ def new_token(token: str, db: Session):
             detail="User not found!",
         )
     access_token = generate_token(user_id=user_db.id, user_name=user_db.user_name)
-    return schema.Tokens(access_token=access_token)
+    return schema.AccessToken(access_token=access_token, token_type="Bearer")
