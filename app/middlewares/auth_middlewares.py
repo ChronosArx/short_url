@@ -1,5 +1,6 @@
-from fastapi import HTTPException, Depends
+from fastapi import HTTPException, Depends, Request, Security
 from fastapi.security import OAuth2PasswordBearer
+from fastapi.security.api_key import APIKeyHeader
 from jwt.exceptions import ExpiredSignatureError, PyJWTError
 import jwt
 from typing import Annotated
@@ -39,7 +40,8 @@ def verify_token_middleware(token: Annotated[str, Depends(schema_oauth)]):
     return payload
 
 
-def verify_refresh_token_middleware(token: Annotated[str, Depends(schema_oauth)]):
+def verify_refresh_token_middleware(request: Request):
+    token = request.cookies.get("refresh_token")
     exception = HTTPException(
         status_code=401,
         detail="Credentials Error",
