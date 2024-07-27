@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 
 
 class UserSignUpSchema(BaseModel):
@@ -8,8 +8,13 @@ class UserSignUpSchema(BaseModel):
 
 
 class UserLogInSchema(BaseModel):
-    username: str
+    user_name: str = Field(..., alias="username")
     password: str
+
+
+class AccessToken(BaseModel):
+    access_token: str
+    token_type: str
 
 
 class Tokens(BaseModel):
