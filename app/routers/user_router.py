@@ -16,7 +16,7 @@ async def get_all_codes(
     db: Annotated[any, Depends(get_db)],
 ):
     """
-    Retorna todos los urls acortados del usuario require token de autentificación
+    EndPoint que retorna todos los urls acorados que hay asociados al usuario logeado
     """
     return await services.get_all_codes(user=user, db=db)
 
@@ -28,6 +28,6 @@ async def get_all_codes(
 )
 async def delate_code(id: int, db: Annotated[any, Depends(get_db)]):
     """
-    Elimina uno de los urls acortdos mediante su id
+    Endpoint que elimina un url acortado por medio de su id.
     """
     return services.delate_code(id=id, db=db)

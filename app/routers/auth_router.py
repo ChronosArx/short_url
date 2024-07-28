@@ -23,7 +23,10 @@ async def signup(
     user: schema.UserSignUpSchema,
     db: Annotated[any, Depends(get_db)],
 ):
-
+    """
+    EndPoint que recive nombre de usuario, email, y password, crea un nuevo usuario y retorna por medio del body
+    un access token y un refresh token el cual se envia por medio de las cookies.
+    """
     tokens = services.signup(user=user, db=db)
     response = JSONResponse(
         content={"access_token": tokens.access_token, "token_type": "Bearer"}
@@ -39,6 +42,10 @@ async def login(
     user_data: Annotated[schema.UserLogInSchema, Depends(OAuth2PasswordRequestForm)],
     db: Annotated[any, Depends(get_db)],
 ):
+    """
+    EndPoint que recive tanto nombre de usuario como contraseña para hacer login recive un access token por medio
+    del body en la respuesta y un refresh token por medio de las cookies.
+    """
     tokens = services.login(user=user_data, db=db)
     response = JSONResponse(
         content={"access_token": tokens.access_token, "token_type": "Bearer"}
@@ -54,4 +61,7 @@ async def get_token(
     db: Annotated[Session, Depends(get_db)],
     token: Annotated[str, Depends(verify_refresh_token_middleware)],
 ) -> schema.AccessToken:
+    """
+    Este endpoint recive el refresh token atravez de cookies, para poder optener un nuevo access token
+    """
     return services.new_token(token=token, db=db)

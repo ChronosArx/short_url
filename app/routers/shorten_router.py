@@ -18,7 +18,7 @@ async def shorten_url(
     url: ShortUrlCreateSchema, db: Annotated[any, Depends(get_db)]
 ) -> ShortUrlSResponseSchema:
     """
-    Para acortar el url porfavor ingrese el url mediante el body
+    EndPoint para acortar el url, ingrese el url mediante el body
     en un campo el cual se llama original_url.
     """
     return controller.create_short_url(original_url=url.original_url, db=db)
@@ -31,8 +31,6 @@ async def shorten_url_by_user(
     db: Annotated[any, Depends(get_db)],
 ) -> ShortUrlSResponseSchema:
     """
-    Esta funcion es para crear un link acortado pero con la opción de agregar un titulo al link
-    esto es para diferencias todos los links que puede tener un usuario registrado y que pueda
-    compartir en su debido momento otros links que haya creado
+    Endpoint para crear un url acortado con titulo, solo los usuarios logeados pueden colocar un titulo para el url acortado
     """
     return controller.create_short_url_by_user(data=url_data, user=user, db=db)
