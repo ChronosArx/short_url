@@ -8,40 +8,54 @@ from ..schemas.shorten_schemas import ShortUrlCreateSchema, ShortUrlSResponseSch
 
 def create_short_url(original_url: str, db: Session) -> ShortUrlSResponseSchema:
     code = generate_short_code()
-    new_short_url = Code(original_url=original_url, code=code)
-    db.add(new_short_url)
-    db.commit()
-    db.refresh(new_short_url)
-    shorten_url = ShortUrlSResponseSchema(
-        id=new_short_url.id,
-        shorten_url=f"http://localhost/{new_short_url.code}",
-        original_url=new_short_url.original_url,
-    )
-    return shorten_url
+    try:
+        new_short_url = Code(original_url=original_url, code=code)
+        db.add(new_short_url)
+        db.commit()
+        db.refresh(new_short_url)
+        shorten_url = ShortUrlSResponseSchema(
+            id=new_short_url.id,
+            shorten_url=f"http://localhost/{new_short_url.code}",
+            original_url=new_short_url.original_url,
+        )
+        return shorten_url
+    except Exception as e:
+        print(e)
+        return HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail={"message": "Internal server error."},
+        )
 
 
 def create_short_url_by_user(
     data: ShortUrlCreateSchema, user: str, db: Session
 ) -> ShortUrlSResponseSchema:
-    user_db = db.query(User).filter(User.user_name == user).first()
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="User not found."
+    try:
+        user_db = db.query(User).filter(User.user_name == user).first()
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="User not found."
+            )
+        code = generate_short_code()
+        new_short_url_user = Code(
+            original_url=data.original_url,
+            title=data.title,
+            code=code,
+            user=user_db,
         )
-    code = generate_short_code()
-    new_short_url_user = Code(
-        original_url=data.original_url,
-        title=data.title,
-        code=code,
-        user=user_db,
-    )
-    db.add(new_short_url_user)
-    db.commit()
-    db.refresh(new_short_url_user)
-    shorten_url = ShortUrlSResponseSchema(
-        id=new_short_url_user.id,
-        shorten_url=f"http://localhost/{new_short_url_user.code}",
-        original_url=new_short_url_user.original_url,
-        title=new_short_url_user.title,
-    )
-    return shorten_url
+        db.add(new_short_url_user)
+        db.commit()
+        db.refresh(new_short_url_user)
+        shorten_url = ShortUrlSResponseSchema(
+            id=new_short_url_user.id,
+            shorten_url=f"http://localhost/{new_short_url_user.code}",
+            original_url=new_short_url_user.original_url,
+            title=new_short_url_user.title,
+        )
+        return shorten_url
+    except Exception as e:
+        print(e)
+        return HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail={"message": "Internal server error"},
+        )
