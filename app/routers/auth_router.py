@@ -29,7 +29,8 @@ async def signup(
     """
     tokens = services.signup(user=user, db=db)
     response = JSONResponse(
-        content={"access_token": tokens.access_token, "token_type": "Bearer"}
+        status_code=status.HTTP_201_CREATED,
+        content={"access_token": tokens.access_token, "token_type": "Bearer"},
     )
     response.set_cookie(
         key="refresh_token", value=tokens.refresh_token, httponly=True, secure=True

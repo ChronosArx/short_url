@@ -24,7 +24,7 @@ async def shorten_url(
     return controller.create_short_url(original_url=url.original_url, db=db)
 
 
-@router.post("/shorten_url_by_user")
+@router.post("/shorten_url_by_user", status_code=status.HTTP_201_CREATED)
 async def shorten_url_by_user(
     url_data: ShortUrlCreateSchema,
     user: Annotated[str, Depends(get_current_user_middleware)],

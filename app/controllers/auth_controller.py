@@ -30,17 +30,17 @@ def save_refresh_token(token: str, user_id: int, db: Session):
         print(e)
 
 
-def signup(db: Session, user: schema.UserSignUpSchema):
+def signup(db: Session, user: schema.UserSignUpSchema) -> schema.Tokens:
     hash_password = getPasswordHash(user.password)
     try:
-        if db.query(User).filter(User.user_name == user.user_name).first():
+        if db.query(User).filter(User.user_name == user.username).first():
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT, detail="User exist!"
             )
 
         # Created and save a new user in database
         user_db = User(
-            user_name=user.user_name,
+            user_name=user.username,
             email=user.email,
             password=hash_password,
         )
@@ -70,7 +70,7 @@ def signup(db: Session, user: schema.UserSignUpSchema):
 
 def login(db: Session, user: schema.UserLogInSchema):
     try:
-        user_db = db.query(User).filter(User.user_name == user.user_name).first()
+        user_db = db.query(User).filter(User.user_name == user.username).first()
         if not user_db:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
