@@ -8,7 +8,7 @@ class UserSignUpSchema(BaseModel):
 
 
 class UserLogInSchema(BaseModel):
-    user_name: str = Field(..., alias="username")
+    username: str
     password: str
 
 
