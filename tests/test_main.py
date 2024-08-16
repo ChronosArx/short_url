@@ -7,7 +7,6 @@ from app.main import app
 from app.dependencies import get_db
 from app.core.config_data_base import Base
 from app.utils.generate_token import generate_token
-import pytest
 import re
 
 
