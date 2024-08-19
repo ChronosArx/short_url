@@ -44,7 +44,7 @@ def create_short_url_by_user(
             )
         code = generate_short_code()
         new_short_url_user = Code(
-            original_url=data.original_url,
+            original_url=str(data.original_url),
             title=data.title,
             code=code,
             user=user_db,

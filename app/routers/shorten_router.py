@@ -21,7 +21,7 @@ async def shorten_url(
     EndPoint para acortar el url, ingrese el url mediante el body
     en un campo el cual se llama original_url.
     """
-    return controller.create_short_url(original_url=url.original_url, db=db)
+    return controller.create_short_url(original_url=str(url.original_url), db=db)
 
 
 @router.post("/shorten_url_by_user", status_code=status.HTTP_201_CREATED)
