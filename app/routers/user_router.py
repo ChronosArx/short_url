@@ -28,8 +28,8 @@ async def get_all_codes(
     status_code=status.HTTP_200_OK,
     dependencies=[Depends(verify_token_middleware)],
 )
-async def delate_code(id: int, db: Annotated[any, Depends(get_db)]):
+async def delate_code(code_id: int, db: Annotated[any, Depends(get_db)]):
     """
     Endpoint que elimina un url acortado por medio de su id.
     """
-    return await services.delate_code(id=id, db=db)
+    return await services.delate_code(id=code_id, db=db)
