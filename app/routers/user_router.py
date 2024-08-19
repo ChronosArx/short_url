@@ -32,4 +32,4 @@ async def delate_code(id: int, db: Annotated[any, Depends(get_db)]):
     """
     Endpoint que elimina un url acortado por medio de su id.
     """
-    return services.delate_code(id=id, db=db)
+    return await services.delate_code(id=id, db=db)
