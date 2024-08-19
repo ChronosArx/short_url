@@ -86,7 +86,7 @@ def test_short_url():
         "/apiv1/shorten/shorten_url",
         json={"original_url": "http://example.com/example"},
     )
-    assert response.status_code == 201
+    assert response.status_code == status.HTTP_201_CREATED
 
     # Verificar que el shorten_url tenga el formato esperado
     data = response.json()
@@ -96,6 +96,14 @@ def test_short_url():
     # Usar regex para verificar el formato de la URL
     pattern = re.compile(r"http://localhost/[a-zA-Z0-9]+")
     assert pattern.match(shorten_url)
+
+
+def test_short_url_incorrect():
+    response = client.post(
+        "/apiv1/shorten/shorten_url", json={"original_url": "invalid-url"}
+    )
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response.json()["detail"] is not None
 
 
 def test_short_url_by_user():
@@ -116,3 +124,64 @@ def test_short_url_by_user():
     # Usar regex para verificar el formato de la URL
     pattern = re.compile(r"http://localhost/[a-zA-Z0-9]+")
     assert pattern.match(shorten_url)
+
+
+def test_get_all_codes():
+    response = client.get(
+        "/apiv1/user/codes",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()
+    assert isinstance(data, list)
+
+
+# Cuando no se tiene el token de authorización
+def test_get_all_codes_incorrect():
+    response = client.get(
+        "/apiv1/user/codes",
+    )
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+def test_delete_code():
+
+    response = client.post(
+        "/apiv1/shorten/shorten_url_by_user",
+        json={
+            "title": "title-test",
+            "original_url": "http://test-example.com/test",
+        },
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+    data = response.json()
+    code_id = data["id"]
+
+    response = client.delete(
+        f"/apiv1/user/code/{code_id}",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    assert response.status_code == status.HTTP_200_OK
+
+
+# cuando se envia un id de codigo que no exite
+def test_delete_code_incorrect():
+
+    response = client.post(
+        "/apiv1/shorten/shorten_url_by_user",
+        json={
+            "title": "title-test",
+            "original_url": "http://test-example.com/test",
+        },
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+
+    response = client.delete(
+        f"/apiv1/user/code/{8}",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    assert response.status_code == status.HTTP_404_NOT_FOUND
