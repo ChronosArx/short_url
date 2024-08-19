@@ -14,11 +14,13 @@ router = APIRouter(prefix="/user", tags=["User"])
 async def get_all_codes(
     user: Annotated[str, Depends(get_current_user_middleware)],
     db: Annotated[any, Depends(get_db)],
+    page: int = None,
+    limit: int = None,
 ):
     """
     EndPoint que retorna todos los urls acorados que hay asociados al usuario logeado
     """
-    return await services.get_all_codes(user=user, db=db)
+    return await services.get_all_codes(user=user, db=db, page=page, limit=limit)
 
 
 @router.delete(
