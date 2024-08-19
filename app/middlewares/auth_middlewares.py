@@ -65,4 +65,4 @@ def verify_refresh_token_middleware(request: Request):
 def get_current_user_middleware(
     payload: Annotated[str, Depends(verify_token_middleware)]
 ):
-    return payload["name"]
+    return {"username": payload["name"], "user_id": payload["sub"]}
