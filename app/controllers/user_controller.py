@@ -1,13 +1,12 @@
 from fastapi import HTTPException
 from fastapi import status
 from sqlalchemy.orm import Session
-from ..models.user import User
 from ..models.code import Code
 
 
 # Funcion de retorno para url acortadas por paginación
-async def get_all_codes(user: dict, db: Session, page: int, limit: int) -> list[Code]:
-    query = db.query(Code).filter(Code.user_id == user["user_id"])
+async def get_all_codes(user: int, db: Session, page: int, limit: int) -> list[Code]:
+    query = db.query(Code).filter(Code.user_id == user)
     if page is not None and limit is not None:
         ofset = (page - 1) * 10
         query = query.limit(limit).offset(ofset)
