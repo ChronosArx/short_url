@@ -20,6 +20,7 @@ router = APIRouter(
     status_code=status.HTTP_201_CREATED,
 )
 async def signup(
+    response: Response,
     user: schema.UserSignUpSchema,
     db: Annotated[any, Depends(get_db)],
 ):
@@ -28,33 +29,27 @@ async def signup(
     un access token y un refresh token el cual se envia por medio de las cookies.
     """
     tokens = services.signup(user=user, db=db)
-    response = JSONResponse(
-        status_code=status.HTTP_201_CREATED,
-        content={"access_token": tokens.access_token, "token_type": "Bearer"},
-    )
     response.set_cookie(
         key="refresh_token", value=tokens.refresh_token, httponly=True, secure=True
     )
-    return response
+    return tokens
 
 
 @router.post("/login", status_code=status.HTTP_200_OK)
 async def login(
     user_data: Annotated[schema.UserLogInSchema, Depends(OAuth2PasswordRequestForm)],
     db: Annotated[any, Depends(get_db)],
+    response: Response,
 ):
     """
     EndPoint que recive tanto nombre de usuario como contraseña para hacer login recive un access token por medio
     del body en la respuesta y un refresh token por medio de las cookies.
     """
     tokens = services.login(user=user_data, db=db)
-    response = JSONResponse(
-        content={"access_token": tokens.access_token, "token_type": "Bearer"}
-    )
     response.set_cookie(
         key="refresh_token", value=tokens.refresh_token, httponly=True, secure=True
     )
-    return response
+    return tokens
 
 
 @router.get("/token")
