@@ -35,7 +35,7 @@ def signup(db: Session, user: schema.UserSignUpSchema) -> schema.Tokens:
     try:
         if db.query(User).filter(User.user_name == user.username).first():
             raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT, detail="User exist!"
+                status_code=status.HTTP_409_CONFLICT, detail="User Exist!"
             )
 
         # Created and save a new user in database
@@ -60,9 +60,11 @@ def signup(db: Session, user: schema.UserSignUpSchema) -> schema.Tokens:
             access_token=access_token,
             refresh_token=refresh_db.refresh_token,
         )
+    except HTTPException:
+        raise
     except Exception as e:
         print(e)
-        return HTTPException(
+        raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail={"message": "Internal Server error"},
         )
