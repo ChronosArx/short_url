@@ -35,7 +35,7 @@ def signup(db: Session, user: schema.UserSignUpSchema) -> schema.Tokens:
     try:
         if db.query(User).filter(User.user_name == user.username).first():
             raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT, detail="User Exist!"
+                status_code=status.HTTP_409_CONFLICT, detail="Username alredy exists."
             )
 
         # Created and save a new user in database
@@ -76,12 +76,12 @@ def login(db: Session, user: schema.UserLogInSchema):
         if not user_db:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="User not found!",
+                detail="Invalid username or password.",
             )
         if not checkPassword(user.password, user_db.password):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="The password is incorrect!",
+                detail="Invalid username or password.",
             )
         access_token = generate_token(user_id=user_db.id, user_name=user_db.user_name)
         refresh_token = generate_token(
@@ -111,13 +111,13 @@ def new_token(token: str, db: Session):
         )
         if not refresh_db:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Credentials error!"
+                status_code=status.HTTP_404_NOT_FOUND, detail="Invalid credentials."
             )
         user_db = db.query(User).filter(User.id == refresh_db.user_id).first()
         if not user_db:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="User not found!",
+                detail="Invalid username.",
             )
         access_token = generate_token(user_id=user_db.id, user_name=user_db.user_name)
         return schema.AccessToken(access_token=access_token, token_type="Bearer")
