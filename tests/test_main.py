@@ -48,6 +48,22 @@ def test_signup():
     assert "access_token" in data
 
 
+def test_signup_incorrect():
+    # Para un usuario que ya existe
+    response = client.post(
+        "/apiv1/auth/signup",
+        json={"username": "test", "email": "test@test.com", "password": "test123"},
+    )
+    assert "detail" in response.json()
+    assert response.status_code == status.HTTP_409_CONFLICT
+    # Para un mal correo
+    response = client.post(
+        "/apiv1/auth/signup",
+        json={"username": "test", "email": "est.com", "password": "test123"},
+    )
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+
 def test_login():
     response = client.post(
         "/apiv1/auth/login",
@@ -58,6 +74,22 @@ def test_login():
     token = data.get("access_token")
     assert token is not None
     assert response.status_code == status.HTTP_200_OK
+
+
+def test_login_incorrect():
+    # Para usuario incorrecto
+    response = client.post(
+        "/apiv1/auth/login",
+        data={"username": "tst", "password": "test123"},
+    )
+    response.status_code == status.HTTP_404_NOT_FOUND
+
+    # Para contraseña incorrecta
+    response = client.post(
+        "/apiv1/auth/login",
+        data={"username": "test", "password": "test12"},
+    )
+    response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
 def test_get_token_with_refresh_token():
@@ -79,6 +111,13 @@ def test_get_token_with_refresh_token():
     assert response.status_code == 200
     json_response = response.json()
     assert "access_token" in json_response
+
+
+def test_get_token_with_refresh_token_incorrect():
+    # Realiza la solicitud para obtener un nuevo access_token sin el refresh_token
+    client.cookies.set("refresh_token", "")
+    response = client.get("apiv1/auth/token")
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
 def test_short_url():
@@ -124,6 +163,30 @@ def test_short_url_by_user():
     # Usar regex para verificar el formato de la URL
     pattern = re.compile(r"http://localhost/[a-zA-Z0-9]+")
     assert pattern.match(shorten_url)
+
+
+def test_short_url_by_user_incorrect():
+    # Ingreso de un url invalido
+    response = client.post(
+        "/apiv1/shorten/shorten_url_by_user",
+        json={
+            "title": "title-test",
+            "original_url": "hola",
+        },
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    # Sin authorización falta el token
+    response = client.post(
+        "/apiv1/shorten/shorten_url_by_user",
+        json={
+            "title": "title-test",
+            "original_url": "http://test-domain.com/hola",
+        },
+        headers={"Authorization": f"Bearer no-token"},
+    )
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
 def test_get_all_codes():
