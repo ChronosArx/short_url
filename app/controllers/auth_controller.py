@@ -94,6 +94,8 @@ def login(db: Session, user: schema.UserLogInSchema):
             access_token=access_token,
             refresh_token=refresh_db.refresh_token,
         )
+    except HTTPException:
+        raise
     except Exception as e:
         print(e)
         return HTTPException(
@@ -119,6 +121,8 @@ def new_token(token: str, db: Session):
             )
         access_token = generate_token(user_id=user_db.id, user_name=user_db.user_name)
         return schema.AccessToken(access_token=access_token, token_type="Bearer")
+    except HTTPException:
+        raise
     except Exception as e:
         print(e)
         return HTTPException(
