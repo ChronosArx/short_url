@@ -41,7 +41,7 @@ token = generate_token(1, "test")
 def test_signup():
     response = client.post(
         "/apiv1/auth/signup",
-        json={"username": "test", "email": "test@test.com", "password": "test123"},
+        json={"username": "test", "email": "test@test.com", "password": "test1234"},
     )
     assert response.status_code == status.HTTP_201_CREATED
     data = response.json()
@@ -52,25 +52,31 @@ def test_signup_incorrect():
     # Para un usuario que ya existe
     response = client.post(
         "/apiv1/auth/signup",
-        json={"username": "test", "email": "test@test.com", "password": "test123"},
+        json={"username": "test", "email": "test@test.com", "password": "test1234"},
     )
     assert "detail" in response.json()
     assert response.status_code == status.HTTP_409_CONFLICT
     # Para un mal correo
     response = client.post(
         "/apiv1/auth/signup",
-        json={"username": "test", "email": "est.com", "password": "test123"},
+        json={"username": "test", "email": "est.com", "password": "test1234"},
     )
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    # Para usuario y contraseña vacios
+    response = client.post(
+        "/apiv1/auth/signup",
+        json={"username": "", "email": "est.com", "password": ""},
+    )
+
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
 
 def test_login():
     response = client.post(
         "/apiv1/auth/login",
-        data={"username": "test", "password": "test123"},
+        data={"username": "test", "password": "test1234"},
     )
     data = response.json()
-    print(data)
     token = data.get("access_token")
     assert token is not None
     assert response.status_code == status.HTTP_200_OK
@@ -80,7 +86,7 @@ def test_login_incorrect():
     # Para usuario incorrecto
     response = client.post(
         "/apiv1/auth/login",
-        data={"username": "tst", "password": "test123"},
+        data={"username": "tst", "password": "test1234"},
     )
     response.status_code == status.HTTP_404_NOT_FOUND
 
@@ -93,11 +99,11 @@ def test_login_incorrect():
 
 
 def test_get_token_with_refresh_token():
-    login_data = {"username": "test", "password": "test123"}
+    login_data = {"username": "test", "password": "test1234"}
 
     # Realiza el login y guarda las cookies
     response = client.post("/apiv1/auth/login", data=login_data)
-    assert response.status_code == 200
+    assert response.status_code == status.HTTP_200_OK
 
     refresh_token = response.cookies.get("refresh_token")
     assert refresh_token is not None
