@@ -25,7 +25,7 @@ async def signup(
     db: Annotated[any, Depends(get_db)],
 ):
     """
-    EndPoint que recive nombre de usuario, email, y password, crea un nuevo usuario y retorna por medio del body
+    EndPoint que recive nombre de usuario, email, y password, el nombre de usuario debe tener minimo 4 caractener y la contraseña 8, crea un nuevo usuario y retorna por medio del body
     un access token y un refresh token el cual se envia por medio de las cookies.
     """
     tokens = services.signup(user=user, db=db)
