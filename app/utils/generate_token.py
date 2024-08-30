@@ -29,7 +29,7 @@ def generate_token(
         token = jwt.encode(payload=new_payload, key=SECRET, algorithm=TOKEN_ALGORITHM)
         return token
     else:
-        expire = datetime.now(timezone.utc) + timedelta(minutes=EXPIRE_REFRESH)
+        expire = datetime.now(timezone.utc) + timedelta(minutes=EXPIRE_ACCESS)
     new_payload = {
         "sub": str(user_id),
         "name": user_name,
