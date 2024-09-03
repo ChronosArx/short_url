@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .routers import shorten_router, auth_router, user_router, redirects_router
+from .core.config_data_base import create_tables
 
 app = FastAPI()
 
@@ -22,3 +23,5 @@ app.include_router(router=redirects_router.router)
 app.include_router(prefix=VERSION_API, router=shorten_router.router)
 app.include_router(prefix=VERSION_API, router=auth_router.router)
 app.include_router(prefix=VERSION_API, router=user_router.router)
+
+create_tables()
