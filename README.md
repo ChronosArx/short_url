@@ -45,7 +45,7 @@ DOMAIN_URL=?
 DATABASE_URL=?
 ```
 
-La primera variable de entorno TOKEN_ALG es el algoritmo usado para firmar los tokens en este caso se recomienda HS256.
+TOKEN_ALG es el algoritmo usado para firmar los tokens en este caso se recomienda HS256.
 
 SECRET_KEY es la llave secreta que sera usada para la firam de los tokens JWT se recomienda usar un generador de claves para que sean mucho mas seguros.
 
