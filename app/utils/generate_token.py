@@ -6,7 +6,7 @@ import os
 dotenv.load_dotenv()
 
 TOKEN_ALGORITHM = os.environ.get("TOKEN_ALG")
-SECRET = os.environ.get("SECRET")
+SECRET_KEY = os.environ.get("SECRET_KEY")
 EXPIRE_ACCESS = os.environ.get("EXPIRE_ACCESS")
 EXPIRE_REFRESH = os.environ.get("EXPIRE_REFRESH")
 
@@ -15,7 +15,7 @@ EXPIRE_REFRESH = float(EXPIRE_REFRESH)
 
 
 def verify_env_variables():
-    if not (EXPIRE_ACCESS and EXPIRE_REFRESH and SECRET and TOKEN_ALGORITHM):
+    if not (EXPIRE_ACCESS and EXPIRE_REFRESH and SECRET_KEY and TOKEN_ALGORITHM):
         raise Exception("Environment variables are missing")
 
 
@@ -26,7 +26,9 @@ def generate_token(
     if refresh:
         expire = datetime.now(tz=timezone.utc) + timedelta(days=EXPIRE_REFRESH)
         new_payload = {"exp": expire}
-        token = jwt.encode(payload=new_payload, key=SECRET, algorithm=TOKEN_ALGORITHM)
+        token = jwt.encode(
+            payload=new_payload, key=SECRET_KEY, algorithm=TOKEN_ALGORITHM
+        )
         return token
     else:
         expire = datetime.now(timezone.utc) + timedelta(minutes=EXPIRE_ACCESS)
@@ -35,5 +37,5 @@ def generate_token(
         "name": user_name,
         "exp": expire,
     }
-    token = jwt.encode(payload=new_payload, key=SECRET, algorithm=TOKEN_ALGORITHM)
+    token = jwt.encode(payload=new_payload, key=SECRET_KEY, algorithm=TOKEN_ALGORITHM)
     return token
