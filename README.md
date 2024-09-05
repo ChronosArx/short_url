@@ -56,3 +56,37 @@ EXPIRE_REFRESH es el tiempo que dura el refresh token el cual es de larga duraci
 DOMAIN_URL es el dominio propio y es el cual se usara para crear los urls acortados y el como se guardaran en la base de datos.
 
 DATABASE_URL es la url de conección para la base de datos.
+
+Una vez que todas las variables de entorno se encuentren en su lugar y correctamente se puede usar el siguiente comando para ejecutar el repsotiroio en modo desarrollo.
+
+```Bash
+fastapi dev ./app/main.py
+```
+
+## Usando Doker
+
+Este proyecto tambien se puede ejecutar usando Docker para poder ejecutar el proyecto en docker primero se debe crear una imagen del proeycto, esta imagen se puede crear con el siguiente comando:
+
+```Bash
+docker build -t shorten:1
+```
+
+Para barificar que la imagen fue creada correcta mente ejecute el siguiente comando y deberia de aparecer la imagen:
+
+```Bash
+docker images
+```
+
+Con esto listo se puede ejecutar el contenedor con el siguiente comando:
+
+> ⚠️ **Warning**: Tanto el primer comando como el ultimo de estos comando con docker deben ejecutarse dentro de la carpeta del proyecto, de igual manera el archivo .env es necesario con sus variables de entorno configuradas correcta mente ya que se pasaran al comando para ejecutar el contenedor.
+
+```Bash
+docker run -p8000:8000 --name api --env-file .env shorten:1
+```
+
+Una vez ejecutado el contenedor o el proyecto por medio del cli de FastAPI se puede acceder a la documentación intercativa del proyecto en la siguiente URL:
+
+```
+http://localhost:8000/docs
+```
