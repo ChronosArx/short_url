@@ -24,15 +24,3 @@ class UserLogIn(SQLModel):
 class AccessToken(SQLModel):
     access_token: str
     token_type: str
-
-
-"""
-class User(Base):
-    __tablename__ = "user"
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    user_name: Mapped[str] = mapped_column(unique=True)
-    email: Mapped[str]
-    password: Mapped[str]
-    codes = relationship("Code", back_populates="user")
-
-"""
