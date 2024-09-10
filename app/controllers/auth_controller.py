@@ -1,8 +1,7 @@
-from sqlalchemy.orm import Session
+from sqlmodel import Session, select
 from fastapi import HTTPException, status
-from ..schemas import auth_schemas as schema
-from ..models.user import User
-from ..models.refresh_token import RefreshToken
+from ..models.user import User, UserLogIn, UserSignUp
+from ..models.refresh_token import RefreshToken, Tokens, AccessToken
 from ..utils.generate_hash import getPasswordHash, checkPassword
 from ..utils.generate_token import generate_token, verify_env_variables
 from datetime import datetime, timedelta, timezone
@@ -15,27 +14,29 @@ verify_env_variables()
 EXPIRE_REFRESH = float(EXPIRE_REFRESH)
 
 
-def save_refresh_token(token: str, user_id: int, db: Session):
+def save_refresh_token(token: str, user_id: int, session: Session):
     try:
         refresh_token = RefreshToken(
             refresh_token=token,
             user_id=user_id,
             expire_date=datetime.now(tz=timezone.utc) + timedelta(days=EXPIRE_REFRESH),
         )
-        db.add(refresh_token)
-        db.commit()
-        db.refresh(refresh_token)
+        session.add(refresh_token)
+        session.commit()
+        session.refresh(refresh_token)
         return refresh_token
     except Exception as e:
         print(e)
 
 
-def signup(db: Session, user: schema.UserSignUpSchema) -> schema.Tokens:
+def signup(session: Session, user: UserSignUp) -> Tokens:
     hash_password = getPasswordHash(user.password)
     try:
-        if db.query(User).filter(User.user_name == user.username).first():
+        statement = select(User).where(User.username == user.username)
+        user_db = session.exec(statement).first()
+        if user_db:
             raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT, detail="Username alredy exists."
+                status_code=status.HTTP_409_CONFLICT, detail="Username already exists."
             )
 
         # Created and save a new user in database
@@ -44,9 +45,9 @@ def signup(db: Session, user: schema.UserSignUpSchema) -> schema.Tokens:
             email=user.email,
             password=hash_password,
         )
-        db.add(user_db)
-        db.commit()
-        db.refresh(user_db)
+        session.add(user_db)
+        session.commit()
+        session.refresh(user_db)
 
         # Generate the access token
         access_token = generate_token(user_id=user_db.id, user_name=user_db.user_name)
@@ -54,9 +55,11 @@ def signup(db: Session, user: schema.UserSignUpSchema) -> schema.Tokens:
         refresh_token = generate_token(
             user_id=user_db.id, user_name=user_db.user_name, refresh=True
         )
-        refresh_db = save_refresh_token(token=refresh_token, user_id=user_db.id, db=db)
+        refresh_db = save_refresh_token(
+            token=refresh_token, user_id=user_db.id, session=session
+        )
 
-        return schema.Tokens(
+        return Tokens(
             access_token=access_token,
             refresh_token=refresh_db.refresh_token,
         )
@@ -70,9 +73,10 @@ def signup(db: Session, user: schema.UserSignUpSchema) -> schema.Tokens:
         )
 
 
-def login(db: Session, user: schema.UserLogInSchema):
+def login(session: Session, user: UserLogIn) -> Tokens:
     try:
-        user_db = db.query(User).filter(User.user_name == user.username).first()
+        statement = select(User).where(User.username == user.username)
+        user_db = session.exec(statement).first()
         if not user_db:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -88,9 +92,11 @@ def login(db: Session, user: schema.UserLogInSchema):
             user_id=user_db.id, user_name=user_db.user_name, refresh=True
         )
 
-        refresh_db = save_refresh_token(token=refresh_token, user_id=user_db.id, db=db)
+        refresh_db = save_refresh_token(
+            token=refresh_token, user_id=user_db.id, session=session
+        )
 
-        return schema.Tokens(
+        return Tokens(
             access_token=access_token,
             refresh_token=refresh_db.refresh_token,
         )
@@ -104,23 +110,22 @@ def login(db: Session, user: schema.UserLogInSchema):
         )
 
 
-def new_token(token: str, db: Session):
+def new_token(token: str, session: Session):
     try:
-        refresh_db = (
-            db.query(RefreshToken).filter(RefreshToken.refresh_token == token).first()
-        )
+        statement = select(RefreshToken).where(RefreshToken.refresh_token == token)
+        refresh_db = session.exec(statement).first()
         if not refresh_db:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail="Invalid credentials."
             )
-        user_db = db.query(User).filter(User.id == refresh_db.user_id).first()
+        user_db = session.query(User).filter(User.id == refresh_db.user_id).first()
         if not user_db:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Invalid username.",
             )
         access_token = generate_token(user_id=user_db.id, user_name=user_db.user_name)
-        return schema.AccessToken(access_token=access_token, token_type="Bearer")
+        return AccessToken(access_token=access_token, token_type="Bearer")
     except HTTPException:
         raise
     except Exception as e:

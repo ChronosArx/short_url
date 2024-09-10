@@ -45,7 +45,9 @@ DOMAIN_URL=?
 DATABASE_URL=?
 ```
 
-TOKEN_ALG es el algoritmo usado para firmar los tokens en este caso se recomienda HS256.
+##### TOKEN_ALG:
+
+Algoritmo usado para firmar los tokens,se recomienda usar HS256.
 
 SECRET_KEY es la llave secreta que sera usada para la firam de los tokens JWT se recomienda usar un generador de claves para que sean mucho mas seguros.
 
@@ -65,13 +67,13 @@ fastapi dev ./app/main.py
 
 ## Usando Doker
 
-Este proyecto tambien se puede ejecutar usando Docker para poder ejecutar el proyecto en docker primero se debe crear una imagen del proeycto, esta imagen se puede crear con el siguiente comando:
+Este proyecto tambien se puede ejecutar usando Docker para poder ejecutar el proyecto en docker primero se debe crear una imagen del proyecto, esta imagen se puede crear con el siguiente comando:
 
 ```Bash
 docker build -t shorten:1
 ```
 
-Para barificar que la imagen fue creada correcta mente ejecute el siguiente comando y deberia de aparecer la imagen:
+Para verificar que la imagen fue creada correcta mente ejecute el siguiente comando y deberia de aparecer la imagen:
 
 ```Bash
 docker images
