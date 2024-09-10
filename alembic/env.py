@@ -6,9 +6,9 @@ from sqlalchemy import pool
 from alembic import context
 
 
-from app.core.config_data_base import Base
-from app.models import user, refresh_token, code
-
+from app.core.config import settings
+from sqlmodel import SQLModel
+from app.models import code, user, refresh_token
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -23,12 +23,19 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = Base.metadata
+target_metadata = SQLModel.metadata
+
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
+
+
+def get_url():
+    url = str(settings.DATABASE_URL)
+    print(f"Database URL: {url}")
+    return url
 
 
 def run_migrations_offline() -> None:
@@ -43,7 +50,8 @@ def run_migrations_offline() -> None:
     script output.
 
     """
-    url = config.get_main_option("sqlalchemy.url")
+    print("Running migrations offline...")
+    url = get_url()
     context.configure(
         url=url,
         target_metadata=target_metadata,
@@ -62,8 +70,10 @@ def run_migrations_online() -> None:
     and associate a connection with the context.
 
     """
+    configuration = config.get_section(config.config_ini_section)
+    configuration["sqlalchemy.url"] = get_url()
     connectable = engine_from_config(
-        config.get_section(config.config_ini_section, {}),
+        configuration,
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
