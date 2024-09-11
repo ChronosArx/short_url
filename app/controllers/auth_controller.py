@@ -3,15 +3,10 @@ from fastapi import HTTPException, status
 from ..models.user import User, UserLogIn, UserSignUp
 from ..models.refresh_token import RefreshToken, Tokens, AccessToken
 from ..utils.generate_hash import getPasswordHash, checkPassword
-from ..utils.generate_token import generate_token, verify_env_variables
+from ..utils.generate_token import generate_token
 from datetime import datetime, timedelta, timezone
-import dotenv
-import os
+from ..core.config import settings
 
-dotenv.load_dotenv()
-EXPIRE_REFRESH = os.environ.get("EXPIRE_REFRESH")
-verify_env_variables()
-EXPIRE_REFRESH = float(EXPIRE_REFRESH)
 
 
 def save_refresh_token(token: str, user_id: int, session: Session):
@@ -19,7 +14,7 @@ def save_refresh_token(token: str, user_id: int, session: Session):
         refresh_token = RefreshToken(
             refresh_token=token,
             user_id=user_id,
-            expire_date=datetime.now(tz=timezone.utc) + timedelta(days=EXPIRE_REFRESH),
+            expire_date=datetime.now(tz=timezone.utc) + timedelta(days=settings.EXPIRE_REFRESH),
         )
         session.add(refresh_token)
         session.commit()

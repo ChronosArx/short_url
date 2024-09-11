@@ -3,12 +3,8 @@ from fastapi import HTTPException, status
 from ..models.user import User
 from ..models.code import Code, ShortUrlCreate, ShortUrlSResponse
 from ..utils.generate_codes import generate_short_code
-import dotenv
-import os
+from ..core.config import settings
 
-dotenv.load_dotenv()
-
-DOMAIN_NAME = os.environ.get("DOMAIN_URL")
 
 
 def create_short_url(original_url: str, session: Session) -> ShortUrlSResponse:
@@ -20,7 +16,7 @@ def create_short_url(original_url: str, session: Session) -> ShortUrlSResponse:
         session.refresh(new_short_url)
         shorten_url = ShortUrlSResponse(
             id=new_short_url.id,
-            shorten_url=f"{DOMAIN_NAME}{new_short_url.code}",
+            shorten_url=f"{settings.get_domain_name()}{new_short_url.code}",
             original_url=new_short_url.original_url,
         )
         return shorten_url
@@ -53,7 +49,7 @@ def create_short_url_by_user(
         session.refresh(new_short_url_user)
         shorten_url = ShortUrlSResponse(
             id=new_short_url_user.id,
-            shorten_url=f"{DOMAIN_NAME}{new_short_url_user.code}",
+            shorten_url=f"{settings.get_domain_name()}{new_short_url_user.code}",
             original_url=new_short_url_user.original_url,
             title=new_short_url_user.title,
         )
