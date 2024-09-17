@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, status
+from starlette.responses import StreamingResponse
 from ..dependencies import SessionDep
 from typing import Annotated
 from ..controllers import shorten_controller as controller
@@ -36,3 +37,12 @@ async def shorten_url_by_user(
     return controller.create_short_url_by_user(
         data=url_data, user=user, session=session
     )
+
+@router.get('/obtain_qr',  response_class=StreamingResponse, responses={
+    200: {
+        "description": "Retorna un código QR en formato PNG",
+    }
+})
+async def get_qr(url:ShortUrlCreate):
+    img_qr = controller.generate_qr(url=url.original_url)
+    return StreamingResponse(img_qr, media_type='image/png', status_code=status.HTTP_201_CREATED)
