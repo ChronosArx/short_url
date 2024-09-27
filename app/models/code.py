@@ -13,14 +13,17 @@ class Code(SQLModel, table=True):
 
 
 class ShortUrlCreate(SQLModel):
-    title: str | None = Field(default=None, description="Only for registered users.")
     original_url: AnyHttpUrl
+
+
+class ShortUrlCreateByUser(ShortUrlCreate):
+    title: str | None = Field(default=None, description="Only for registered users.")
 
 
 class ShortUrlSResponse(SQLModel):
-    id: int
+    id: int | None
     title: str | None = Field(
         default=None, description="Only urls created by registered users have title."
     )
-    original_url: AnyHttpUrl
-    shorten_url: AnyHttpUrl
+    original_url: AnyHttpUrl | None
+    shorten_url: AnyHttpUrl | None
