@@ -7,7 +7,7 @@ class User(SQLModel, table=True):
     username: str = Field(max_length=200)
     email: EmailStr = Field(unique=True)
     password: str = Field(min_length=8)
-    codes: list["codes"] = Relationship(back_populates="user")
+    codes: list["Code"] | None = Relationship(back_populates="user")
 
 
 class UserSignUp(SQLModel):
