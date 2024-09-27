@@ -1,25 +1,28 @@
 from fastapi import HTTPException
 from fastapi import status
-from sqlalchemy.orm import Session
+from sqlmodel import Session, select
 from ..models.code import Code
 
 
 # Funcion de retorno para url acortadas por paginación
-async def get_all_codes(user: int, db: Session, page: int, limit: int) -> list[Code]:
-    query = db.query(Code).filter(Code.user_id == user)
+async def get_all_codes(
+    user: int, session: Session, page: int, limit: int
+) -> list[Code]:
+    statement = select(Code).filter(Code.user_id == user)
     if page is not None and limit is not None:
-        ofset = (page - 1) * 10
-        query = query.limit(limit).offset(ofset)
-    codes = query.all()
+        offset = (page - 1) * 10
+        statement = statement.limit(limit).offset(offset)
+    codes = session.exec(statement).all()
     return codes
 
 
-async def delate_code(id: int, db: Session):
-    code = db.query(Code).filter(Code.id == id).first()
+async def delate_code(id: int, session: Session):
+    statement = select(Code).filter(Code.id == id)
+    code = session.exec(statement).first()
     if not code:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Short url don't exist"
         )
-    db.delete(code)
-    db.commit()
+    session.delete(code)
+    session.commit()
     return
