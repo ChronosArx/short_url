@@ -10,20 +10,22 @@ import io
 
 
 def create_short_url(original_url: str, session: Session) -> ShortUrlSResponse:
-    code = generate_short_code()
     try:
+        code = generate_short_code()
         new_short_url = Code(original_url=original_url, code=code)
         session.add(new_short_url)
         session.commit()
         session.refresh(new_short_url)
         shorten_url = ShortUrlSResponse(
             id=new_short_url.id,
-            shorten_url=f"{settings.get_domain_name()}{new_short_url.code}",
+            shorten_url=f"{settings.get_domain_name()}/{new_short_url.code}",
             original_url=new_short_url.original_url,
         )
+        print(shorten_url)
         return shorten_url
     except Exception as e:
-        return HTTPException(
+        print(e)
+        raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail={"message": "Internal server error."},
         )
@@ -51,7 +53,7 @@ def create_short_url_by_user(
         session.refresh(new_short_url_user)
         shorten_url = ShortUrlSResponse(
             id=new_short_url_user.id,
-            shorten_url=f"{settings.get_domain_name()}{new_short_url_user.code}",
+            shorten_url=f"{settings.get_domain_name()}/{new_short_url_user.code}",
             original_url=new_short_url_user.original_url,
             title=new_short_url_user.title,
         )
@@ -63,10 +65,10 @@ def create_short_url_by_user(
         )
 
 
-def generate_qr(url:str) :
+def generate_qr(url: str):
     qr = qrcode.QRCode(
         version=1,
-        box_size = 10,
+        box_size=10,
         border=1,
         error_correction=qrcode.constants.ERROR_CORRECT_L,
     )
@@ -76,8 +78,8 @@ def generate_qr(url:str) :
     img = qr.make_image(fill_color="black", back_color="white")
 
     img_byte_arr = io.BytesIO()
-    img.save(img_byte_arr, format='PNG')
-    
+    img.save(img_byte_arr, format="PNG")
+
     # seek(0) indica colocar el buffer al inicio
     img_byte_arr.seek(0)
 

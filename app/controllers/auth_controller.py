@@ -8,13 +8,13 @@ from datetime import datetime, timedelta, timezone
 from ..core.config import settings
 
 
-
 def save_refresh_token(token: str, user_id: int, session: Session):
     try:
         refresh_token = RefreshToken(
             refresh_token=token,
             user_id=user_id,
-            expire_date=datetime.now(tz=timezone.utc) + timedelta(days=settings.EXPIRE_REFRESH),
+            expire_date=datetime.now(tz=timezone.utc)
+            + timedelta(days=settings.EXPIRE_REFRESH),
         )
         session.add(refresh_token)
         session.commit()
