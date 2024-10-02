@@ -59,7 +59,7 @@ def create_short_url_by_user(
         )
         return shorten_url
     except Exception as e:
-        return HTTPException(
+        raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail={"message": "Internal server error"},
         )

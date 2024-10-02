@@ -25,8 +25,8 @@ def save_refresh_token(token: str, user_id: int, session: Session):
 
 
 def signup(session: Session, user: UserSignUp) -> Tokens:
-    hash_password = getPasswordHash(user.password)
     try:
+        hash_password = getPasswordHash(user.password)
         statement = select(User).where(User.username == user.username)
         user_db = session.exec(statement).first()
         if user_db:
@@ -36,7 +36,7 @@ def signup(session: Session, user: UserSignUp) -> Tokens:
 
         # Created and save a new user in database
         user_db = User(
-            user_name=user.username,
+            username=user.username,
             email=user.email,
             password=hash_password,
         )
@@ -45,10 +45,10 @@ def signup(session: Session, user: UserSignUp) -> Tokens:
         session.refresh(user_db)
 
         # Generate the access token
-        access_token = generate_token(user_id=user_db.id, user_name=user_db.user_name)
+        access_token = generate_token(user_id=user_db.id, user_name=user_db.username)
         # Generate the refresh token and save this in the database
         refresh_token = generate_token(
-            user_id=user_db.id, user_name=user_db.user_name, refresh=True
+            user_id=user_db.id, user_name=user_db.username, refresh=True
         )
         refresh_db = save_refresh_token(
             token=refresh_token, user_id=user_db.id, session=session
@@ -58,8 +58,6 @@ def signup(session: Session, user: UserSignUp) -> Tokens:
             access_token=access_token,
             refresh_token=refresh_db.refresh_token,
         )
-    except HTTPException:
-        raise
     except Exception as e:
         print(e)
         raise HTTPException(
@@ -82,9 +80,9 @@ def login(session: Session, user: UserLogIn) -> Tokens:
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid username or password.",
             )
-        access_token = generate_token(user_id=user_db.id, user_name=user_db.user_name)
+        access_token = generate_token(user_id=user_db.id, user_name=user_db.username)
         refresh_token = generate_token(
-            user_id=user_db.id, user_name=user_db.user_name, refresh=True
+            user_id=user_db.id, user_name=user_db.username, refresh=True
         )
 
         refresh_db = save_refresh_token(
@@ -95,11 +93,9 @@ def login(session: Session, user: UserLogIn) -> Tokens:
             access_token=access_token,
             refresh_token=refresh_db.refresh_token,
         )
-    except HTTPException:
-        raise
     except Exception as e:
         print(e)
-        return HTTPException(
+        raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail={"message": "Internal server error"},
         )
@@ -113,7 +109,8 @@ def new_token(token: str, session: Session):
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail="Invalid credentials."
             )
-        user_db = session.query(User).filter(User.id == refresh_db.user_id).first()
+        statement = select(User).where(User.id == refresh_db.user_id)
+        user_db = session.exec(statement).first()
         if not user_db:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -121,11 +118,9 @@ def new_token(token: str, session: Session):
             )
         access_token = generate_token(user_id=user_db.id, user_name=user_db.user_name)
         return AccessToken(access_token=access_token, token_type="Bearer")
-    except HTTPException:
-        raise
     except Exception as e:
         print(e)
-        return HTTPException(
+        raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail={"message": "Internal server error."},
         )
