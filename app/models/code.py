@@ -1,14 +1,15 @@
 from sqlmodel import SQLModel, Field, Relationship
 from pydantic import AnyHttpUrl
+from typing import Optional
 from .user import User
 
 
 class Code(SQLModel, table=True):
     id: int = Field(primary_key=True)
     original_url: str
-    title: str = Field(max_length=200)
+    title: str | None = Field(max_length=200, nullable=True)
     code: str = Field(max_length=6)
-    user_id: int | None = Field(foreign_key="user.id")
+    user_id: int | None = Field(foreign_key="code.id", nullable=True)
     user: User | None = Relationship(back_populates="codes")
 
 
