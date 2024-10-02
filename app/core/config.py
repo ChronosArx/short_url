@@ -2,14 +2,17 @@ from sqlmodel import SQLModel, create_engine
 from dotenv import load_dotenv
 import os
 
+
 class Settings:
 
-    def __init__(self) -> None:
+    def __init__(self, test: bool = False) -> None:
         load_dotenv()
+        if test:
+            self.DATABASE_URL = "sqlite://"
         self.DATABASE_URL = os.getenv("DATABASE_URL")
         self.JWT_ALGORITHM = os.getenv("JWT_ALGORITHM")
         self.SECRET_KEY = os.getenv("SECRET_KEY")
-        self.DOMAIN_URL = os.getenv('DOMAIN_URL')
+        self.DOMAIN_URL = os.getenv("DOMAIN_URL")
 
         # Manejo de posibles errores en la conversión
         try:
@@ -21,16 +24,23 @@ class Settings:
         self.verify_env_variables()
         self.engine = create_engine(self.DATABASE_URL, echo=True)
 
-
-    
     def verify_env_variables(self):
         missing_vars = []
-        for var_name in ['EXPIRE_ACCESS', 'EXPIRE_REFRESH', 'SECRET_KEY', 'JWT_ALGORITHM', 'DATABASE_URL', 'DOMAIN_URL']:
+        for var_name in [
+            "EXPIRE_ACCESS",
+            "EXPIRE_REFRESH",
+            "SECRET_KEY",
+            "JWT_ALGORITHM",
+            "DATABASE_URL",
+            "DOMAIN_URL",
+        ]:
             if getattr(self, var_name) is None:
                 missing_vars.append(var_name)
 
         if missing_vars:
-            raise ValueError(f"Missing environment variables: {', '.join(missing_vars)}")
+            raise ValueError(
+                f"Missing environment variables: {', '.join(missing_vars)}"
+            )
 
     def get_db_metadata(self):
         return SQLModel.metadata
@@ -38,12 +48,11 @@ class Settings:
     def create_tables(self):
         SQLModel.metadata.create_all(self.engine)
         return
-    
-    def get_domain_name(self) -> str:
-        if 'localhost' in self.DOMAIN_URL:
-            return f'http://{self.DOMAIN_URL}'
-        return f'https://{self.DOMAIN_URL}'
 
+    def get_domain_name(self) -> str:
+        if "localhost" in self.DOMAIN_URL:
+            return f"http://{self.DOMAIN_URL}"
+        return f"https://{self.DOMAIN_URL}"
 
 
 settings = Settings()
