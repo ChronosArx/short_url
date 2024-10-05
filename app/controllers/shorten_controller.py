@@ -1,12 +1,22 @@
 import qrcode.constants
 from sqlmodel import Session, select
 from fastapi import HTTPException, status
-from ..models.user import User
-from ..models.code import Code, ShortUrlCreate, ShortUrlSResponse
+from ..models import User, Code
+from ..schemas.code import ShortUrlCreate, ShortUrlSResponse
 from ..utils.generate_codes import generate_short_code
 from ..core.config import settings
 import qrcode
+from typing import TypeVar
 import io
+
+T = TypeVar("T")
+
+
+def model_save(model: T, session: Session):
+    session.add(model)
+    session.commit()
+    session.refresh(model)
+    return model
 
 
 def create_short_url(original_url: str, session: Session) -> ShortUrlSResponse:
@@ -21,7 +31,6 @@ def create_short_url(original_url: str, session: Session) -> ShortUrlSResponse:
             shorten_url=f"{settings.get_domain_name()}/{new_short_url.code}",
             original_url=new_short_url.original_url,
         )
-        print(shorten_url)
         return shorten_url
     except Exception as e:
         print(e)
@@ -59,7 +68,7 @@ def create_short_url_by_user(
         )
         return shorten_url
     except Exception as e:
-        raise HTTPException(
+        return HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail={"message": "Internal server error"},
         )

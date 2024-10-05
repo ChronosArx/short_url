@@ -1,7 +1,7 @@
 from starlette.responses import RedirectResponse
 from fastapi import HTTPException, status
 from sqlmodel import Session, select
-from ..models.code import Code
+from ..models import Code
 
 
 def redirect_url(code: str, session: Session):

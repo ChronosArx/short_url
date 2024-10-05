@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends, status, Response
 from fastapi.security import OAuth2PasswordRequestForm
 from typing import Annotated
 from ..controllers import auth_controller as services
-from ..models.user import UserLogIn, UserSignUp
-from ..models.refresh_token import Tokens, AccessToken
+from ..schemas.user import UserLogIn, UserSignUp
+from ..schemas.refresh_token import Tokens, AccessToken
 from ..dependencies import SessionDep
 from ..middlewares.auth_middlewares import verify_refresh_token_middleware
 

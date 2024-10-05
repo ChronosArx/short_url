@@ -1,5 +1,7 @@
-from sqlmodel import SQLModel, create_engine
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 from dotenv import load_dotenv
+from ..models import Base
 import os
 
 
@@ -42,11 +44,8 @@ class Settings:
                 f"Missing environment variables: {', '.join(missing_vars)}"
             )
 
-    def get_db_metadata(self):
-        return SQLModel.metadata
-
     def create_tables(self):
-        SQLModel.metadata.create_all(self.engine)
+        Base.metadata.create_all(self.engine)
         return
 
     def get_domain_name(self) -> str:

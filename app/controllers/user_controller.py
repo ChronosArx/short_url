@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 from fastapi import status
 from sqlmodel import Session, select
-from ..models.code import Code
+from ..models import Code
 
 
 # Funcion de retorno para url acortadas por paginación

@@ -1,7 +1,8 @@
 from sqlmodel import Session, select
 from fastapi import HTTPException, status
-from ..models.user import User, UserLogIn, UserSignUp
-from ..models.refresh_token import RefreshToken, Tokens, AccessToken
+from ..schemas.user import UserLogIn, UserSignUp
+from ..schemas.refresh_token import Tokens, AccessToken
+from ..models import User, RefreshToken
 from ..utils.generate_hash import getPasswordHash, checkPassword
 from ..utils.generate_token import generate_token
 from datetime import datetime, timedelta, timezone
