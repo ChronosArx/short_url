@@ -1,6 +1,7 @@
 from starlette.responses import RedirectResponse
 from fastapi import HTTPException, status
-from sqlmodel import Session, select
+from sqlalchemy.orm import Session
+from sqlalchemy import select
 from ..models import Code
 
 

@@ -1,4 +1,5 @@
-from sqlmodel import Session, select
+from sqlalchemy.orm import Session
+from sqlalchemy import select
 from fastapi import HTTPException, status
 from ..schemas.user import UserLogIn, UserSignUp
 from ..schemas.refresh_token import Tokens, AccessToken

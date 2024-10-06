@@ -1,6 +1,7 @@
 from fastapi import HTTPException
 from fastapi import status
-from sqlmodel import Session, select
+from sqlalchemy.orm import Session
+from sqlalchemy import select
 from ..models import Code
 
 
