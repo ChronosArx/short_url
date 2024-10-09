@@ -1,4 +1,4 @@
-from sqlmodel import Session
+from sqlalchemy.orm import Session
 from .core.config import settings
 from typing import Annotated
 from collections.abc import Generator
