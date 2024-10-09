@@ -5,12 +5,12 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 from app.main import app
 from app.dependencies import get_db
-from app.core.config_data_base import Base
+from app.models import Base
 from app.utils.generate_token import generate_token
 import re
 
 
-SQLALCHEMY_DATABASE_URL = "sqlite://"
+SQLALCHEMY_DATABASE_URL = "sqlite:///"
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL,
@@ -77,6 +77,7 @@ def test_login():
         data={"username": "test", "password": "test1234"},
     )
     data = response.json()
+    print(data)
     token = data.get("access_token")
     assert token is not None
     assert response.status_code == status.HTTP_200_OK
@@ -137,9 +138,9 @@ def test_short_url():
     data = response.json()
     shorten_url = data.get("shorten_url")
     assert shorten_url is not None
-
+    print(data)
     # Usar regex para verificar el formato de la URL
-    pattern = re.compile(r"http://localhost/[a-zA-Z0-9]+")
+    pattern = re.compile(r"http://localhost:8000/[a-zA-Z0-9]+")
     assert pattern.match(shorten_url)
 
 
@@ -167,7 +168,7 @@ def test_short_url_by_user():
     assert shorten_url is not None
 
     # Usar regex para verificar el formato de la URL
-    pattern = re.compile(r"http://localhost/[a-zA-Z0-9]+")
+    pattern = re.compile(r"http://localhost:8000/[a-zA-Z0-9]+")
     assert pattern.match(shorten_url)
 
 
