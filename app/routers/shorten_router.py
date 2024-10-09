@@ -43,13 +43,13 @@ async def shorten_url_by_user(
     "/obtain_qr",
     response_class=StreamingResponse,
     responses={
-        200: {
+        status.HTTP_200_OK: {
             "description": "Retorna un código QR en formato PNG",
         }
     },
 )
 async def get_qr(url: ShortUrlCreate):
-    img_qr = controller.generate_qr(url=url.original_url)
+    image = controller.generate_qr(url=url.original_url)
     return StreamingResponse(
-        img_qr, media_type="image/png", status_code=status.HTTP_201_CREATED
+        image, media_type="image/png", status_code=status.HTTP_201_CREATED
     )
