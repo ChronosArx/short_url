@@ -7,17 +7,7 @@ from ..utils.generate_codes import generate_short_code
 from ..core.config import settings
 import qrcode
 import qrcode.constants
-from typing import TypeVar
 import io
-
-T = TypeVar("T")
-
-
-def model_save(model: T, session: Session):
-    session.add(model)
-    session.commit()
-    session.refresh(model)
-    return model
 
 
 def create_short_url(original_url: str, session: Session) -> ShortUrlSResponse:
@@ -42,11 +32,11 @@ def create_short_url(original_url: str, session: Session) -> ShortUrlSResponse:
 
 
 def create_short_url_by_user(
-    data: ShortUrlCreate, user: str, session: Session
+    data: ShortUrlCreate, user: int, session: Session
 ) -> ShortUrlSResponse:
     try:
-        statement = select(User).where(User.username == user)
-        user_db = session.exec(statement).first()
+        statement = select(User).where(User.id == user)
+        user_db = session.execute(statement).scalars().one_or_none()
         if not user_db:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail="User not found."
@@ -55,6 +45,7 @@ def create_short_url_by_user(
         new_short_url_user = Code(
             original_url=str(data.original_url),
             title=data.title,
+            user_id=user_db.id,
             code=code,
             user=user_db,
         )
@@ -68,7 +59,10 @@ def create_short_url_by_user(
             title=new_short_url_user.title,
         )
         return shorten_url
+    except HTTPException as http_execption:
+        raise http_execption
     except Exception as e:
+        print(e)
         return HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail={"message": "Internal server error"},

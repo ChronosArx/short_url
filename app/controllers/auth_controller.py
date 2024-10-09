@@ -30,7 +30,7 @@ def signup(session: Session, user: UserSignUp) -> Tokens:
     try:
         hash_password = getPasswordHash(user.password)
         statement = select(User).where(User.username == user.username)
-        user_db = session.exec(statement).first()
+        user_db = session.execute(statement).scalars().one_or_none()
         if user_db:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT, detail="Username already exists."
@@ -60,6 +60,8 @@ def signup(session: Session, user: UserSignUp) -> Tokens:
             access_token=access_token,
             refresh_token=refresh_db.refresh_token,
         )
+    except HTTPException as httP_exception:
+        raise httP_exception
     except Exception as e:
         print(e)
         raise HTTPException(
@@ -71,7 +73,7 @@ def signup(session: Session, user: UserSignUp) -> Tokens:
 def login(session: Session, user: UserLogIn) -> Tokens:
     try:
         statement = select(User).where(User.username == user.username)
-        user_db = session.exec(statement).first()
+        user_db = session.execute(statement).scalars().one_or_none()
         if not user_db:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -95,31 +97,35 @@ def login(session: Session, user: UserLogIn) -> Tokens:
             access_token=access_token,
             refresh_token=refresh_db.refresh_token,
         )
+    except HTTPException as httP_exception:
+        raise httP_exception
     except Exception as e:
         print(e)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail={"message": "Internal server error"},
+            detail="Internal server error",
         )
 
 
 def new_token(token: str, session: Session):
     try:
         statement = select(RefreshToken).where(RefreshToken.refresh_token == token)
-        refresh_db = session.exec(statement).first()
+        refresh_db = session.execute(statement).scalars().one_or_none()
         if not refresh_db:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail="Invalid credentials."
             )
         statement = select(User).where(User.id == refresh_db.user_id)
-        user_db = session.exec(statement).first()
+        user_db = session.execute(statement).scalars().one_or_none()
         if not user_db:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Invalid username.",
             )
-        access_token = generate_token(user_id=user_db.id, user_name=user_db.user_name)
+        access_token = generate_token(user_id=user_db.id, user_name=user_db.username)
         return AccessToken(access_token=access_token, token_type="Bearer")
+    except HTTPException as httP_exception:
+        raise httP_exception
     except Exception as e:
         print(e)
         raise HTTPException(
