@@ -1,32 +1,25 @@
 from fastapi import HTTPException, Depends, Request, Security
 from fastapi.security import OAuth2PasswordBearer
-from fastapi.security.api_key import APIKeyHeader
 from jwt.exceptions import ExpiredSignatureError, PyJWTError
 import jwt
 from typing import Annotated
-import dotenv
-import os
-
-dotenv.load_dotenv()
-
-TOKEN_ALGORITHM = os.environ.get("TOKEN_ALG")
-SECRET = os.environ.get("SECRET")
+from ..core.config import settings
 
 
 schema_oauth = OAuth2PasswordBearer(tokenUrl="apiv1/auth/login")
+exception = HTTPException(
+    status_code=401,
+    detail="Credentials Error",
+    headers={"WWW-Authenticate": "Bearer"},
+)
 
 
 def verify_token_middleware(token: Annotated[str, Depends(schema_oauth)]):
-    exception = HTTPException(
-        status_code=401,
-        detail="Credentials Error",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
     try:
         payload = jwt.decode(
             token,
-            SECRET,
-            algorithms=[TOKEN_ALGORITHM],
+            settings.SECRET_KEY,
+            algorithms=[settings.JWT_ALGORITHM],
             verify=True,
             options={"verify_exp": True},
         )
@@ -42,16 +35,11 @@ def verify_token_middleware(token: Annotated[str, Depends(schema_oauth)]):
 
 def verify_refresh_token_middleware(request: Request):
     token = request.cookies.get("refresh_token")
-    exception = HTTPException(
-        status_code=401,
-        detail="Credentials Error",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
     try:
         jwt.decode(
             token,
-            SECRET,
-            algorithms=[TOKEN_ALGORITHM],
+            settings.SECRET_KEY,
+            algorithms=[settings.JWT_ALGORITHM],
             verify=True,
             options={"verify_exp": True},
         )
