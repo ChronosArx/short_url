@@ -3,7 +3,7 @@ from starlette.responses import StreamingResponse
 from ..dependencies import SessionDep
 from typing import Annotated
 from ..controllers import shorten_controller as controller
-from ..models.code import ShortUrlCreate, ShortUrlSResponse, ShortUrlCreateByUser
+from ..schemas.code import ShortUrlCreate, ShortUrlSResponse, ShortUrlCreateByUser
 from ..middlewares.auth_middlewares import get_current_user_middleware
 
 
@@ -28,7 +28,7 @@ async def shorten_url(url: ShortUrlCreate, session: SessionDep):
 @router.post("/shorten_url_by_user", status_code=status.HTTP_201_CREATED)
 async def shorten_url_by_user(
     url_data: ShortUrlCreateByUser,
-    user: Annotated[str, Depends(get_current_user_middleware)],
+    user: Annotated[int, Depends(get_current_user_middleware)],
     session: SessionDep,
 ) -> ShortUrlSResponse:
     """
