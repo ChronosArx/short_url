@@ -8,7 +8,7 @@ def generate_token(
 ) -> str:
     if refresh:
         expire = datetime.now(tz=timezone.utc) + timedelta(days=settings.EXPIRE_REFRESH)
-        new_payload = {"exp": expire}
+        new_payload = {"exp": expire, "sub":str(user_id)}
         token = jwt.encode(
             payload=new_payload, key=settings.SECRET_KEY, algorithm=settings.JWT_ALGORITHM
         )
