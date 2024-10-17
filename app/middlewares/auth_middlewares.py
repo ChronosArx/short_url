@@ -33,24 +33,25 @@ def verify_token_middleware(token: Annotated[str, Depends(schema_oauth)]):
     return payload
 
 
-def verify_refresh_token_middleware(request: Request):
+def verify_refresh_token_middleware_and_get_user(request: Request):
     token = request.cookies.get("refresh_token")
     try:
-        jwt.decode(
+       payload =  jwt.decode(
             token,
             settings.SECRET_KEY,
             algorithms=[settings.JWT_ALGORITHM],
             verify=True,
             options={"verify_exp": True},
         )
-        return token
     except ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Credentials Error")
     except PyJWTError:
         raise exception
 
+    return int(payload["sub"])
 
 def get_current_user_middleware(
     payload: Annotated[str, Depends(verify_token_middleware)]
 ):
-    return payload["sub"]
+    print(payload)
+    return int(payload["sub"])
