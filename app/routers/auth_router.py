@@ -4,7 +4,7 @@ from typing import Annotated
 from ..controllers import auth_controller as services
 from ..schemas.user import UserLogIn, UserSignUp, Tokens, AccessToken
 from ..dependencies import SessionDep
-from ..middlewares.auth_middlewares import get_current_user_middleware
+from ..middlewares.auth_middlewares import verify_refresh_token_middleware_and_get_user
 
 router = APIRouter(
     prefix="/auth",
@@ -57,7 +57,7 @@ async def logout(response:Response):
 @router.get("/token", response_model=AccessToken)
 async def get_token(
     session: SessionDep,
-    user_id: Annotated[str, Depends(get_current_user_middleware)],
+    user_id: Annotated[int, Depends(verify_refresh_token_middleware_and_get_user)],
 ) -> AccessToken:
     """
     Este endpoint recive el refresh token atravez de cookies, para poder optener un nuevo access token
