@@ -115,7 +115,7 @@ def test_get_token_with_refresh_token():
     # Realiza la solicitud para obtener un nuevo access_token
     response = client.get("apiv1/auth/token")
 
-    assert response.status_code == 200
+    assert response.status_code == status.HTTP_200_OK
     json_response = response.json()
     assert "access_token" in json_response
 
