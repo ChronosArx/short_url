@@ -32,11 +32,3 @@ class Code(Base):
         ForeignKey("users.id"), nullable=True
     )
     user: Mapped[Optional["User"]] = relationship(back_populates="codes")
-
-
-class RefreshToken(Base):
-    __tablename__ = "refresh_tokens"
-    id: Mapped[int] = mapped_column(primary_key=True)
-    refresh_token: Mapped[str]
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    expire_date: Mapped[datetime]

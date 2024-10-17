@@ -1,9 +1,8 @@
-from fastapi import APIRouter, Depends, status, Response
+from fastapi import APIRouter, Depends, status, Response, Request
 from fastapi.security import OAuth2PasswordRequestForm
 from typing import Annotated
 from ..controllers import auth_controller as services
-from ..schemas.user import UserLogIn, UserSignUp
-from ..schemas.refresh_token import Tokens, AccessToken
+from ..schemas.user import UserLogIn, UserSignUp, Tokens, AccessToken
 from ..dependencies import SessionDep
 from ..middlewares.auth_middlewares import verify_refresh_token_middleware
 
@@ -49,6 +48,10 @@ async def login(
         key="refresh_token", value=tokens.refresh_token, httponly=True, secure=True
     )
     return tokens
+
+@router.get('/logout', status_code=status.HTTP_200_OK)
+async def logout(response:Response):
+    response.delete_cookie('refresh_token')
 
 
 @router.get("/token", response_model=AccessToken)

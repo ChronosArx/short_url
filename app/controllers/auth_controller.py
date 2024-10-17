@@ -1,29 +1,11 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 from fastapi import HTTPException, status
-from ..schemas.user import UserLogIn, UserSignUp
-from ..schemas.refresh_token import Tokens, AccessToken
-from ..models import User, RefreshToken
+from ..schemas.user import UserLogIn, UserSignUp, Tokens, AccessToken
+from ..models import User
 from ..utils.generate_hash import getPasswordHash, checkPassword
 from ..utils.generate_token import generate_token
-from datetime import datetime, timedelta, timezone
 from ..core.config import settings
-
-
-def save_refresh_token(token: str, user_id: int, session: Session):
-    try:
-        refresh_token = RefreshToken(
-            refresh_token=token,
-            user_id=user_id,
-            expire_date=datetime.now(tz=timezone.utc)
-            + timedelta(days=settings.EXPIRE_REFRESH),
-        )
-        session.add(refresh_token)
-        session.commit()
-        session.refresh(refresh_token)
-        return refresh_token
-    except Exception as e:
-        print(e)
 
 
 def signup(session: Session, user: UserSignUp) -> Tokens:
@@ -52,13 +34,9 @@ def signup(session: Session, user: UserSignUp) -> Tokens:
         refresh_token = generate_token(
             user_id=user_db.id, user_name=user_db.username, refresh=True
         )
-        refresh_db = save_refresh_token(
-            token=refresh_token, user_id=user_db.id, session=session
-        )
-
         return Tokens(
             access_token=access_token,
-            refresh_token=refresh_db.refresh_token,
+            refresh_token=refresh_token,
         )
     except HTTPException as httP_exception:
         raise httP_exception
@@ -88,14 +66,9 @@ def login(session: Session, user: UserLogIn) -> Tokens:
         refresh_token = generate_token(
             user_id=user_db.id, user_name=user_db.username, refresh=True
         )
-
-        refresh_db = save_refresh_token(
-            token=refresh_token, user_id=user_db.id, session=session
-        )
-
         return Tokens(
             access_token=access_token,
-            refresh_token=refresh_db.refresh_token,
+            refresh_token=refresh_token,
         )
     except HTTPException as httP_exception:
         raise httP_exception
@@ -107,20 +80,14 @@ def login(session: Session, user: UserLogIn) -> Tokens:
         )
 
 
-def new_token(token: str, session: Session):
+def new_token(user_id: int, session: Session):
     try:
-        statement = select(RefreshToken).where(RefreshToken.refresh_token == token)
-        refresh_db = session.execute(statement).scalars().one_or_none()
-        if not refresh_db:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Invalid credentials."
-            )
-        statement = select(User).where(User.id == refresh_db.user_id)
+        statement = select(User).where(User.id == user_id)
         user_db = session.execute(statement).scalars().one_or_none()
         if not user_db:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Invalid username.",
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Error to create the new access token",
             )
         access_token = generate_token(user_id=user_db.id, user_name=user_db.username)
         return AccessToken(access_token=access_token, token_type="Bearer")
