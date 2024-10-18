@@ -39,7 +39,7 @@ async def shorten_url_by_user(
     )
 
 
-@router.get(
+@router.post(
     "/obtain_qr",
     response_class=StreamingResponse,
     responses={
